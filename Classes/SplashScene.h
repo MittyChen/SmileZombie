@@ -2,7 +2,9 @@
 #define __SPLASH_SCENE_H__
 
 #include "cocos2d.h"
-#include "GameScene.h"
+
+
+
 class SplashScene : public cocos2d::Layer
 {
 public:

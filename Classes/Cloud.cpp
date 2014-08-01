@@ -42,7 +42,7 @@ void Cloud::setTexture(const std::string &filename)
 
 void Cloud::flowerBreath()
 {
-	CCAction*  action = CCSequence::createWithTwoActions(	CCScaleTo::create(1, 0.6f), CCScaleTo::create(1, 1.0f));
+	CCAction*  action = Sequence::createWithTwoActions(	ScaleTo::create(1, 0.6f), ScaleTo::create(1, 1.0f));
 	this->runAction(action); 
 }
 

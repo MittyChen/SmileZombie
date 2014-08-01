@@ -1,26 +1,29 @@
+#include "MainMenuScene.h"
+#include "UIButton.h"
 #include "GameScene.h"
 
 
 USING_NS_CC;
 using namespace cocostudio;
 using namespace cocos2d::extension;
-GameScene::GameScene(void)
+using namespace ui;
+MainMenuScene::MainMenuScene(void)
 {
 	flowerAn  =  0;
 	memitter  = NULL;
 	particleTexture = TextureCache::sharedTextureCache()->addImage("flowers/flower_1.png");
 	mFlower = NULL;
 }
-GameScene::~GameScene(void)
+MainMenuScene::~MainMenuScene(void)
 {
 }
-Scene* GameScene::createScene()
+Scene* MainMenuScene::createScene()
 {
     // 'scene' is an autorelease object
     auto scene = Scene::create();
     
     // 'layer' is an autorelease object
-    auto layer = GameScene::create();
+    auto layer = MainMenuScene::create();
 
 	
     // add layer as a child to scene
@@ -31,7 +34,7 @@ Scene* GameScene::createScene()
 }
 
 // on "init" you need to initialize your instance
-bool GameScene::init()
+bool MainMenuScene::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -57,16 +60,16 @@ bool GameScene::init()
 	mclouds = NULL;
 
 	auto event =EventListenerTouchOneByOne::create();
-	event->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan,this);
-	event->onTouchCancelled = CC_CALLBACK_2(GameScene::onTouchCancelled,this);
-	event->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded,this);
-	event->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved,this);
+	event->onTouchBegan = CC_CALLBACK_2(MainMenuScene::onTouchBegan,this);
+	event->onTouchCancelled = CC_CALLBACK_2(MainMenuScene::onTouchCancelled,this);
+	event->onTouchEnded = CC_CALLBACK_2(MainMenuScene::onTouchEnded,this);
+	event->onTouchMoved = CC_CALLBACK_2(MainMenuScene::onTouchMoved,this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(event,this);
 
     auto closeItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
-                                           CC_CALLBACK_1(GameScene::menuCloseCallback, this));
+                                           CC_CALLBACK_1(MainMenuScene::menuCloseCallback, this));
     
 	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
                                 origin.y + closeItem->getContentSize().height/2));
@@ -91,7 +94,7 @@ bool GameScene::init()
 		mclouds->setCloudFixedHeight(600);
 		mclouds->startCloudEngine();
 	}
-	this->schedule(schedule_selector(GameScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
+	this->schedule(schedule_selector(MainMenuScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
 
 
 	////¹Ç÷À¶¯»­
@@ -107,7 +110,10 @@ bool GameScene::init()
 	//armature->runAction(mfly);
 	//addChild(armature);
 
-	auto label = LabelTTF::create("Game Scene", "Arial", 24);
+
+
+
+	auto label = LabelTTF::create("MainMenu Scene", "Arial", 24);
 
 	// position the label on the center of the screen
 	label->setPosition(Vec2(origin.x + visibleSize.width/2,
@@ -116,11 +122,19 @@ bool GameScene::init()
 	// add the label as a child to this layer
 	this->addChild(label, 1);
 
+
+
+	// Create the button
+	Button* button = Button::create("twitterdefault.png","twitterdown.png");
+	button->setPosition(button->getSize());
+	button->addTouchEventListener(CC_CALLBACK_2(MainMenuScene::touchEvent, this));
+	button->setScale(0.5);
+	this->addChild(button);
     return true;
 }
 
 
-bool GameScene::onTouchBegan(Touch *touch, Event *unused_event)
+bool MainMenuScene::onTouchBegan(Touch *touch, Event *unused_event)
 {
 	CCLOG("HelloWorld::onTouchBegan");
 	Vec2 currentLocation = touch->getLocation();
@@ -131,7 +145,7 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event)
 	return true;
 }
 
-void GameScene::onTouchMoved(Touch *touch, Event *unused_event)
+void MainMenuScene::onTouchMoved(Touch *touch, Event *unused_event)
 {
 	Vec2 currentLocation = touch->getLocation();
 	Vec2 previousLocation = touch->getPreviousLocation();
@@ -152,19 +166,19 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused_event)
 	}
 }
 
-void GameScene::onTouchEnded(Touch *touch, Event *unused_event)
+void MainMenuScene::onTouchEnded(Touch *touch, Event *unused_event)
 {
 	cleanupParticleSystem(0);
-	//this->scheduleOnce(schedule_selector(GameScene::cleanupParticleSystem) ,2.0f);
+	//this->scheduleOnce(schedule_selector(MainMenuScene::cleanupParticleSystem) ,2.0f);
 }
 
-void GameScene::onTouchCancelled(Touch *touch, Event *unused_event)
+void MainMenuScene::onTouchCancelled(Touch *touch, Event *unused_event)
 {
 
 }
 
 
-void GameScene::menuCloseCallback(Ref* pSender)
+void MainMenuScene::menuCloseCallback(Ref* pSender)
 {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
 	MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
@@ -177,12 +191,12 @@ void GameScene::menuCloseCallback(Ref* pSender)
     exit(0);
 #endif
 }
- void GameScene::update(float delta)
+ void MainMenuScene::update(float delta)
  {
 	 flowerAn += 60;
  }
 
- void GameScene::updateFlowers(float dt)
+ void MainMenuScene::updateFlowers(float dt)
  {
 	 if(mFlower)
 	 {
@@ -191,7 +205,7 @@ void GameScene::menuCloseCallback(Ref* pSender)
 	 }
  }
 
- void GameScene::setParticlesystem(Vec2 mlocation,float amAngle)
+ void MainMenuScene::setParticlesystem(Vec2 mlocation,float amAngle)
  {
 
 	    //CCParticleExplosion±¬Õ¨
@@ -269,7 +283,7 @@ void GameScene::menuCloseCallback(Ref* pSender)
 	 }
  }
 
- void GameScene::cleanupParticleSystem(float dt)
+ void MainMenuScene::cleanupParticleSystem(float dt)
  {
 	 if(memitter)
 	 {
@@ -283,4 +297,33 @@ void GameScene::menuCloseCallback(Ref* pSender)
 	 {
 		 mFlower->setVisible(false);
 	 }
+ }
+
+
+ void MainMenuScene::touchEvent(Ref *pSender, Widget::TouchEventType type)
+ {
+	 switch (type)
+	 {
+	 case Widget::TouchEventType::BEGAN:
+		 break;
+
+	 case Widget::TouchEventType::MOVED:
+		 break;
+
+	 case Widget::TouchEventType::ENDED:
+		goGameScene(0);
+		 break;
+
+	 case Widget::TouchEventType::CANCELED:
+		 break;
+
+	 default:
+		 break;
+	 }
+ }
+
+ void MainMenuScene::goGameScene(float t)
+ {
+	 auto scene = GameScene::createScene();
+	 Director::getInstance()->replaceScene(scene);
  }

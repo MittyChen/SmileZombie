@@ -95,7 +95,7 @@ void CloudSeed::startCloudEngine()
 	mlayer->schedule(schedule_selector(CloudSeed::updatePositionHorizen) ,1/60,kRepeatForever, 0.0f);//cloud move
 }
 
-void CloudSeed::initCloudEngine(CCLayer *layer,struct BounsStruct mstrct,CLOUD_SEED_TYPE seedMode,int Zorder)
+void CloudSeed::initCloudEngine(Layer *layer,struct BounsStruct mstrct,CLOUD_SEED_TYPE seedMode,int Zorder)
 {
 	mlayer = layer;
 	mZorder = Zorder;

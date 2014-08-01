@@ -42,6 +42,6 @@ void LonelyFlower::setTexture(const std::string &filename)
 
 void LonelyFlower::flowerBreath()
 {
-	CCAction*  action = CCSequence::createWithTwoActions(	CCScaleTo::create(1, 0.6f), CCScaleTo::create(1, 1.0f));
+	CCAction*  action = Sequence::createWithTwoActions(	ScaleTo::create(1, 0.6f), ScaleTo::create(1, 1.0f));
 	this->runAction(action); 
 }

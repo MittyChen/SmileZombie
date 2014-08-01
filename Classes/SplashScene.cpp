@@ -1,5 +1,5 @@
 #include "SplashScene.h"
-
+#include "MainMenuScene.h"
 USING_NS_CC;
 
 Scene* SplashScene::createScene()
@@ -41,7 +41,7 @@ bool SplashScene::init()
 
 	// add the sprite as a child to this layer
 	this->addChild(sprite, 0);
-	CCFadeOut* mFade =  CCFadeOut::create(3.0f);
+	FadeOut* mFade =  FadeOut::create(3.0f);
 	sprite->runAction(mFade);
 	scheduleOnce(schedule_selector(SplashScene::goGameScene) , 3.0f);
 
@@ -53,6 +53,6 @@ bool SplashScene::init()
 
  void SplashScene::goGameScene(float t)
  {
-		auto scene = GameScene::createScene();
+		auto scene = MainMenuScene::createScene();
 		 Director::getInstance()->replaceScene(scene);
  }

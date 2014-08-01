@@ -20,7 +20,7 @@ typedef enum
 
 
 
-class CloudSeed : public cocos2d::CCNode
+class CloudSeed : public cocos2d::Node
 {
 public:
 
@@ -36,7 +36,7 @@ public:
 	//void seedClouds( cocos2d::CCLayer *layer,int Zorder);
 	cocos2d::Vector<Cloud*> getSpriteList();
 	int Random(int m, int n);
-	void initCloudEngine(cocos2d::CCLayer *layer,struct BounsStruct mstrct,CLOUD_SEED_TYPE seedMode,int Zorder);
+	void initCloudEngine(cocos2d::Layer *layer,struct BounsStruct mstrct,CLOUD_SEED_TYPE seedMode,int Zorder);
 	void startCloudEngine();
 	float getCloudScaleRamdomRate();
 	const char* getSpiriteName(int index);
