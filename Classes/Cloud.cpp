@@ -9,7 +9,6 @@ bool Cloud::init()
 	initCloudTexture();
 	return true;
 }
-
 const char* Cloud::getSpiriteName(int index)
 {
 	CCLOG("Cloud::getSpiriteName  %d",index);
@@ -19,6 +18,7 @@ const char* Cloud::getSpiriteName(int index)
 
 		return resToRet->getCString();
 	}
+
 	return  "clouds/cloud2.png";
 
 }
@@ -33,6 +33,31 @@ int Cloud::randTexture()
 void  Cloud::initCloudTexture()
 {
 	this->setTexture(getSpiriteName(randTexture()));
+	if(true)
+	{
+		auto fileUtiles = FileUtils::getInstance();
+		auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/greycloud.fsh");
+		auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
+		auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
+		setGLProgramState(GLProgramState::getOrCreateWithGLProgram(glprogram));
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+		_backgroundListener = EventListenerCustom::create(EVENT_RENDERER_RECREATED,
+			[this](EventCustom*)
+		{
+			glprogram->reset();
+			glprogram->initWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
+			glprogram->link();
+			glprogram->updateUniforms();
+		}
+		);
+		Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backgroundListener, -1);
+#endif
+	}
+else
+{//addNormal shader
+	this->setShaderProgram(ShaderCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+}
 }
 
 void Cloud::setTexture(const std::string &filename)
@@ -68,4 +93,9 @@ int Cloud::getCloudDirection()
 	return cloudDirection;
 }
 
+ bool Cloud::initWithTexture(Texture2D *texture)
+{
+	__super::initWithTexture(texture);
 
+	return true;
+}

@@ -1,8 +1,7 @@
-#ifndef __LONELY_FLOWER_H__
-#define  __LONELY_FLOWER_H__
+#ifndef __CLOUD_H__
+#define  _CLOUD_H__
 
 #include "cocos2d.h"
-
 class Cloud : public cocos2d::Sprite
 {
 public:
@@ -15,10 +14,24 @@ public:
 	void initCloudTexture();
 	void setCloudDirection(int dir);
 	int getCloudDirection();
-
-
+	virtual bool initWithTexture(cocos2d::Texture2D *texture);
 	int cloudDirection;
 
+	//shaders
+protected:
+	Cloud()
+	{
+	}
+	~Cloud()
+	{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+		Director::getInstance()->getEventDispatcher()->removeEventListener(_backgroundListener);
+#endif
+	}
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	cocos2d::EventListenerCustom* _backgroundListener;
+#endif
 };
 
-#endif // _ __LONELY_FLOWER_H__
+#endif // _ _CLOUD_H__

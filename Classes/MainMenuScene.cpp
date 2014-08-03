@@ -98,17 +98,17 @@ bool MainMenuScene::init()
 
 
 	////¹Ç÷À¶¯»­
-	//cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
-	//armature = cocostudio::CCArmature::create("bird");
-	//armature->getAnimation()->playByIndex(0);
-	//armature->setScale(0.6);
-	//armature->getAnimation()->setSpeedScale(0.5);
-	//armature->setPosition(ccp(900,600));
-	//armature->setRotation(-25);
-	//
-	//auto mfly = CCMoveTo::create(5,Vec2(100,600));
-	//armature->runAction(mfly);
-	//addChild(armature);
+	cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
+	armature = cocostudio::CCArmature::create("bird");
+	armature->getAnimation()->playByIndex(0);
+	armature->setScale(0.6);
+	armature->getAnimation()->setSpeedScale(0.5);
+	armature->setPosition(ccp(900,600));
+	armature->setRotation(-25);
+	
+	auto mfly = CCMoveTo::create(5,Vec2(100,600));
+	armature->runAction(mfly);
+	addChild(armature);
 
 
 
