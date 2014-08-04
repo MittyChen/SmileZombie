@@ -2,6 +2,7 @@
 #define  __CLOUD_SEED_H__
 
 #include "cocos2d.h"
+#include "SZTimeSystem.h"
 
 class Cloud;
 struct BounsStruct
@@ -27,6 +28,7 @@ public:
 	virtual bool init();
 
 	CREATE_FUNC(CloudSeed);
+	static CloudSeed* getInstance();
 	void setBounds(float upBounds,float downBounds,float leftBounds,float rightBounds);
 	float getOriginalPositionX();
 	float getOriginalPositionY();
@@ -44,6 +46,10 @@ public:
 	void setSeedType(CLOUD_SEED_TYPE type);
 	void setCloudFixedHeight(float cHeight);
 	void initSingleCloud( Cloud* mSpir );
+
+private:
+	static CloudSeed * instance;
+
 	static cocos2d::Vector<Cloud*> mSpriteList;
 	static cocos2d::CCLayer *mlayer;
 	static int mZorder;
@@ -56,7 +62,7 @@ public:
 	static float CLOUD_SIZE_SCALE;
 	static int CLOUD_SUM;
 	static float CLOUD_SEED_BREAKTIME;
-
+	DAY_TIME_BLOCK currentDayBlock;
 };
 
 #endif // __CLOUD_SEED_H__

@@ -1,7 +1,7 @@
 #include "MainMenuScene.h"
 #include "UIButton.h"
 #include "GameScene.h"
-
+#include "SZTimeSystem.h"
 
 USING_NS_CC;
 using namespace cocostudio;
@@ -84,17 +84,14 @@ bool MainMenuScene::init()
 		this->scheduleUpdate();
 	} while (0);
 	 
-	if(!mclouds)
-	{
-		mclouds = CloudSeed::create();
-		Size visibleSize = Director::getInstance()->getVisibleSize();
 		//mclouds->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
 		struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
-		mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
-		mclouds->setCloudFixedHeight(600);
-		mclouds->startCloudEngine();
-	}
-	this->schedule(schedule_selector(MainMenuScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
+		CloudSeed::getInstance()->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
+		CloudSeed::getInstance()->setCloudFixedHeight(600);
+		CloudSeed::getInstance()->startCloudEngine();
+
+
+		this->schedule(schedule_selector(MainMenuScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
 
 
 	////¹Ç÷À¶¯»­
@@ -130,6 +127,9 @@ bool MainMenuScene::init()
 	button->addTouchEventListener(CC_CALLBACK_2(MainMenuScene::touchEvent, this));
 	button->setScale(0.5);
 	this->addChild(button);
+
+	SZTimeSystem::getInstance()->init();
+
     return true;
 }
 

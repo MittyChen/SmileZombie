@@ -7,7 +7,7 @@ float CloudSeed::CLOUD_SIZE_SCALE = 1.0f;
 float CloudSeed::CLOUD_MOVE_STEP =0.5f;
 int CloudSeed::CLOUD_SUM=6;
 float CloudSeed::CLOUD_SEED_BREAKTIME=3.0f;
-
+ CloudSeed * CloudSeed::instance = NULL;
 
  struct  BounsStruct  CloudSeed::cloudBounds = {960,800,-90,1024};
  cocos2d::Vector<Cloud*> CloudSeed::mSpriteList ;
@@ -20,7 +20,7 @@ float CloudSeed::CLOUD_SEED_BREAKTIME=3.0f;
 bool CloudSeed::init()
 {
 	__super::init();
-
+	currentDayBlock = DAY_TIME_BLOCK::DAY_TIME_BLOCK_NONE;
 	return true;
 }
 
@@ -100,11 +100,23 @@ void CloudSeed::initCloudEngine(Layer *layer,struct BounsStruct mstrct,CLOUD_SEE
 	mlayer = layer;
 	mZorder = Zorder;
 	cloudBounds = mstrct;
+	currentDayBlock = SZTimeSystem::getInstance()->getDayStatus();
 	setSeedType(seedMode);
 }
-
 void CloudSeed::seedClouds(float dt)
 {
+	if(currentDayBlock != SZTimeSystem::getInstance()->getDayStatus() && currentDayBlock != DAY_TIME_BLOCK_NONE )
+	{
+		
+		for(int i = 0 ; i < mSpriteList.size() ; i++)
+		{
+			auto mSpir = (Cloud*)mSpriteList.at(i);//×´Ì¬¸Ä±äÔÆ¶ä½¥Òþ 
+			mSpir->runAction(CCFadeOut::create(2));
+		}
+		currentDayBlock = SZTimeSystem::getInstance()->getDayStatus();
+		CCLOG("the day  statu is changed");
+	}
+
 	for(int i = 0 ; i < mSpriteList.size() ; i++)
 	{
 		auto mSpir = (Cloud*)mSpriteList.at(i);
@@ -228,4 +240,13 @@ void CloudSeed::initSingleCloud( Cloud* mSpi )
 
 			mSpi->setScale(getCloudScaleRamdomRate()*CLOUD_SIZE_SCALE);
 
+}
+
+CloudSeed* CloudSeed::getInstance()
+{
+	if(!instance)
+	{
+		instance = CloudSeed::create();
+	}
+	return  instance;
 }

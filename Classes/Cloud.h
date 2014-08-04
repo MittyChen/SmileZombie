@@ -2,6 +2,8 @@
 #define  _CLOUD_H__
 
 #include "cocos2d.h"
+#include "SZTimeSystem.h"
+
 class Cloud : public cocos2d::Sprite
 {
 public:

@@ -33,13 +33,13 @@ int Cloud::randTexture()
 void  Cloud::initCloudTexture()
 {
 	this->setTexture(getSpiriteName(randTexture()));
-	if(true)
+	if(SZTimeSystem::getInstance()->getDayStatus() == DAY_TIME_BLOCK::DAY_NIGHT_BLOCK)
 	{
 		auto fileUtiles = FileUtils::getInstance();
 		auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/greycloud.fsh");
 		auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
 		auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
-		setGLProgramState(GLProgramState::getOrCreateWithGLProgram(glprogram));
+		this->setGLProgramState(GLProgramState::getOrCreateWithGLProgram(glprogram));
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 		_backgroundListener = EventListenerCustom::create(EVENT_RENDERER_RECREATED,
