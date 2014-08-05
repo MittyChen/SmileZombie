@@ -16,11 +16,10 @@ float CloudSeed::CLOUD_SEED_BREAKTIME=3.0f;
   int CloudSeed::mZorder = -10;
  bool  CloudSeed::hasFixedHeight =false;
  float  CloudSeed::cloudsFixedHeight = 600.0f;
-
+ DAY_TIME_BLOCK CloudSeed::currentDayBlock=DAY_TIME_BLOCK_NONE;
 bool CloudSeed::init()
 {
 	__super::init();
-	currentDayBlock = DAY_TIME_BLOCK::DAY_TIME_BLOCK_NONE;
 	return true;
 }
 
@@ -100,12 +99,13 @@ void CloudSeed::initCloudEngine(Layer *layer,struct BounsStruct mstrct,CLOUD_SEE
 	mlayer = layer;
 	mZorder = Zorder;
 	cloudBounds = mstrct;
+	hasFixedHeight =false;
 	currentDayBlock = SZTimeSystem::getInstance()->getDayStatus();
 	setSeedType(seedMode);
 }
 void CloudSeed::seedClouds(float dt)
 {
-	if(currentDayBlock != SZTimeSystem::getInstance()->getDayStatus() && currentDayBlock != DAY_TIME_BLOCK_NONE )
+	if(currentDayBlock != SZTimeSystem::getInstance()->getDayStatus() && currentDayBlock != DAY_TIME_BLOCK_NONE  )
 	{
 		
 		for(int i = 0 ; i < mSpriteList.size() ; i++)
@@ -239,14 +239,5 @@ void CloudSeed::initSingleCloud( Cloud* mSpi )
 	}
 
 			mSpi->setScale(getCloudScaleRamdomRate()*CLOUD_SIZE_SCALE);
-
 }
 
-CloudSeed* CloudSeed::getInstance()
-{
-	if(!instance)
-	{
-		instance = CloudSeed::create();
-	}
-	return  instance;
-}

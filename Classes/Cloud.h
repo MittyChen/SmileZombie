@@ -1,5 +1,5 @@
 #ifndef __CLOUD_H__
-#define  _CLOUD_H__
+#define  __CLOUD_H__
 
 #include "cocos2d.h"
 #include "SZTimeSystem.h"

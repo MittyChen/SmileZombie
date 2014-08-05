@@ -6,9 +6,10 @@
 #include "CloudSeed.h"
 #include "cocos-ext.h"
 #include "cocostudio/CCArmature.h"
+#include "ui/UIWidget.h"
 using namespace cocos2d;
-
-
+using namespace ui;
+class SurroundingsSprite;
 class GameScene : public cocos2d::Layer
 {
 public:
@@ -25,6 +26,8 @@ public:
     
     // implement the "static create()" method manually
     CREATE_FUNC(GameScene);
+	
+	static GameScene* getInstance();
 
 	virtual void update(float delta);
 
@@ -35,6 +38,7 @@ public:
 	 void updateFlowers(float dt);
 	 void setParticlesystem(cocos2d::Vec2 mlocation,float amAngle);
 	 void cleanupParticleSystem(float dt);
+	 void touchEvent(cocos2d::Ref *pSender, cocos2d::ui::Widget::TouchEventType type);
 
 private:
 	LonelyFlower * mFlower;
@@ -43,6 +47,8 @@ private:
 	cocos2d::Texture2D* particleTexture;
 	CloudSeed* mclouds;
 	cocostudio::CCArmature* armature;
+	SurroundingsSprite * gameBG;
+	static GameScene * instance;
 public:
 	enum NodeZorder
 	{

@@ -27,6 +27,7 @@ void SZTimeSystem::startSystem()
 	gameStartTime[3] = minite;//·Ö
 	gameStartTime[4] = second;//Ãë
 	
+
 }
 
 void SZTimeSystem::setTimeStep(float timest)
@@ -39,6 +40,7 @@ SZTimeSystem* SZTimeSystem::getInstance()
 	if(!instance)
 	{
 		instance = SZTimeSystem::create();
+		instance->startSystem();
 	}
 	return instance;
 }
@@ -47,7 +49,6 @@ bool SZTimeSystem::init()
 {
 	__super::init();
 	startTime = NULL;
-	this->startSystem();
 	return true;
 }
 
@@ -60,6 +61,7 @@ DAY_TIME_BLOCK SZTimeSystem::getDayStatus()
 	newtime = localtime( &long_time ); 
 	int h = newtime->tm_hour;
 	int m = newtime->tm_min;
+
 	if(h>5&&h<7)
 	{
 		res = DAY_TIME_BLOCK::DAY_MORNING_BLOCK;
@@ -76,9 +78,9 @@ DAY_TIME_BLOCK SZTimeSystem::getDayStatus()
 		res = DAY_TIME_BLOCK::DAY_NIGHT_BLOCK;
 	} 
 
-	if(m>22)
+	if(m>17)
 	{
-		res =DAY_TIME_BLOCK::DAY_NIGHT_BLOCK;
+		res = DAY_TIME_BLOCK::DAY_NIGHT_BLOCK;
 	}
 	return res;
 }

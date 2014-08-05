@@ -1,14 +1,19 @@
 #include "GameScene.h"
+#include "SurroundingsSprite.h"
+#include "UIButton.h"
 
+#include "MainMenuScene.h"
 
 USING_NS_CC;
+
 using namespace cocostudio;
 using namespace cocos2d::extension;
+
+ GameScene * GameScene::instance = NULL;
 GameScene::GameScene(void)
 {
 	flowerAn  =  0;
 	memitter  = NULL;
-	particleTexture = TextureCache::sharedTextureCache()->addImage("flowers/flower_1.png");
 	mFlower = NULL;
 }
 GameScene::~GameScene(void)
@@ -42,17 +47,22 @@ bool GameScene::init()
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+	particleTexture = TextureCache::sharedTextureCache()->addImage("flowers/flower_1.png");
+
+	gameBG = SurroundingsSprite::create();
+	gameBG->initBaseTexture("mapbg/dungeon_battle_","jpg",13);
+
 	/*auto mTopLayer = LayerColor::create(ccc4(0,50,50,255));
 	mTopLayer->setZOrder(TOP_LAYER_ZORDER);
 	this->addChild(mTopLayer);*/
 
-	auto bgSpirit = Sprite::create("gamebg.jpg");
-	bgSpirit->setPosition(Vec2(origin.x + visibleSize.width - bgSpirit->getContentSize().width/2 ,
-		origin.y + bgSpirit->getContentSize().height/2));
+	gameBG->setTextureByindex(2);//set bg handly
+	gameBG->setPosition(Vec2(origin.x + visibleSize.width - gameBG->getContentSize().width/2 ,
+		origin.y + gameBG->getContentSize().height/2));
 
-	bgSpirit->setZOrder(TOP_LAYER_ZORDER);
+	gameBG->setZOrder(TOP_LAYER_ZORDER);
 
-	this->addChild(bgSpirit);
+	this->addChild(gameBG);
 
 	mclouds = NULL;
 
@@ -84,11 +94,10 @@ bool GameScene::init()
 	if(!mclouds)
 	{
 		mclouds = CloudSeed::create();
-		Size visibleSize = Director::getInstance()->getVisibleSize();
 		//mclouds->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
 		struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
 		mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
-		mclouds->setCloudFixedHeight(600);
+		mclouds->setCloudFixedHeight(300);
 		mclouds->startCloudEngine();
 	}
 	this->schedule(schedule_selector(GameScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
@@ -106,6 +115,14 @@ bool GameScene::init()
 	//auto mfly = CCMoveTo::create(5,Vec2(100,600));
 	//armature->runAction(mfly);
 	//addChild(armature);
+
+
+	// Create the button
+	Button* button = Button::create("twitterdefault.png","twitterdown.png");
+	button->setPosition(button->getSize());
+	button->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
+	button->setScale(0.5);
+	this->addChild(button);
 
 	auto label = LabelTTF::create("Game Scene", "Arial", 24);
 
@@ -282,5 +299,39 @@ void GameScene::menuCloseCallback(Ref* pSender)
 	 if(mFlower)
 	 {
 		 mFlower->setVisible(false);
+	 }
+ }
+ GameScene* GameScene::getInstance()
+ {
+	 if(!instance)
+	 {
+		 instance = GameScene::create();
+	 }
+	 return  instance;
+ }
+
+ void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type)
+ {
+	 switch (type)
+	 {
+	 case Widget::TouchEventType::BEGAN:
+		 break;
+
+	 case Widget::TouchEventType::MOVED:
+		 break;
+
+	 case Widget::TouchEventType::ENDED:
+		 {
+		 auto scene = MainMenuScene::createScene();
+		 Director::getInstance()->replaceScene(scene);		 
+		 }
+
+		 break;
+
+	 case Widget::TouchEventType::CANCELED:
+		 break;
+
+	 default:
+		 break;
 	 }
  }

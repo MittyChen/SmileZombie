@@ -10,7 +10,7 @@ void main(void)
 	vec4 c = texture2D(CC_Texture0, v_texCoord);
 	if(c.w>0)
 	{
-		gl_FragColor.xyz = vec3(0.5,0.5,0.5);
+		gl_FragColor.xyz = vec3(0.1*c.r , 0.1*c.g , 0.1*c.b);
 	}
 	
 	gl_FragColor.w = c.w;

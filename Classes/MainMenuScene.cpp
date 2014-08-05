@@ -3,6 +3,9 @@
 #include "GameScene.h"
 #include "SZTimeSystem.h"
 
+
+MainMenuScene * MainMenuScene::instance = NULL;
+
 USING_NS_CC;
 using namespace cocostudio;
 using namespace cocos2d::extension;
@@ -84,11 +87,15 @@ bool MainMenuScene::init()
 		this->scheduleUpdate();
 	} while (0);
 	 
+	if(!mclouds)
+	{
+		mclouds = CloudSeed::create();
 		//mclouds->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
 		struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
-		CloudSeed::getInstance()->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
-		CloudSeed::getInstance()->setCloudFixedHeight(600);
-		CloudSeed::getInstance()->startCloudEngine();
+		mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
+		//mclouds->setCloudFixedHeight(300);
+		mclouds->startCloudEngine();
+	}
 
 
 		this->schedule(schedule_selector(MainMenuScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
@@ -128,7 +135,7 @@ bool MainMenuScene::init()
 	button->setScale(0.5);
 	this->addChild(button);
 
-	SZTimeSystem::getInstance()->init();
+	SZTimeSystem::getInstance();
 
     return true;
 }
@@ -326,4 +333,28 @@ void MainMenuScene::menuCloseCallback(Ref* pSender)
  {
 	 auto scene = GameScene::createScene();
 	 Director::getInstance()->replaceScene(scene);
+ }
+
+ MainMenuScene* MainMenuScene::getInstance()
+ {
+	 if(!instance)
+	 {
+		 instance = MainMenuScene::create();
+	 }
+	 return  instance;
+ }
+  MainMenuScene* MainMenuScene::create() 
+ { 
+	 MainMenuScene *pRet = new MainMenuScene(); 
+	 if (pRet && pRet->init()) 
+	 { 
+		 pRet->autorelease(); 
+		 return pRet; 
+	 } 
+	 else 
+	 { 
+		 delete pRet; 
+		 pRet = NULL; 
+		 return NULL; 
+	 } 
  }
