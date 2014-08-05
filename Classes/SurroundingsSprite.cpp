@@ -4,7 +4,7 @@
 
 
 USING_NS_CC;
- DAY_TIME_BLOCK SurroundingsSprite::currentDayBlock=DAY_TIME_BLOCK_NONE;
+
 
 // on "init" you need to initialize your instance
 bool SurroundingsSprite::init()
@@ -79,10 +79,10 @@ void SurroundingsSprite::setTextureByindex(int index)
 
  void SurroundingsSprite::update(float delta)
 {
-	if(currentDayBlock != SZTimeSystem::getInstance()->getDayStatus()  && currentDayBlock == DAY_DUSK_BLOCK  )
+	if(SZTimeSystem::getInstance()->shouldGoDark()  )
 	{
 		schedule(schedule_selector( SurroundingsSprite::goDark) ,0.1f,kRepeatForever, 0.0f);
-		currentDayBlock = SZTimeSystem::getInstance()->getDayStatus() 
+		SZTimeSystem::getInstance()->setShouldGoDark(false);
 	}
 }
 void SurroundingsSprite::goDark(float dt)
