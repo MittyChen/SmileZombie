@@ -4,7 +4,7 @@
 #include <stdio.h> 
 
 SZTimeSystem* SZTimeSystem::instance= NULL;
- DAY_TIME_BLOCK SZTimeSystem::currentDayBlock=DAY_TIME_BLOCK_NONE;
+
 void SZTimeSystem::startSystem()
 {
 	//time_t t = time(0);
@@ -27,7 +27,6 @@ void SZTimeSystem::startSystem()
 	gameStartTime[3] = minite;//·Ö
 	gameStartTime[4] = second;//Ãë
 	
-	this->schedule(schedule_selector(SZTimeSystem::updateStatus) ,2.0f,kRepeatForever, 0.0f);
 
 }
 
@@ -50,7 +49,6 @@ bool SZTimeSystem::init()
 {
 	__super::init();
 	startTime = NULL;
-	isShouldGoDark = false;
 	return true;
 }
 
@@ -80,12 +78,7 @@ DAY_TIME_BLOCK SZTimeSystem::getDayStatus()
 		res = DAY_TIME_BLOCK::DAY_NIGHT_BLOCK;
 	} 
 
-	if(m<27)
-	{
-		res = DAY_TIME_BLOCK::DAY_DUSK_BLOCK;
-	}
-
-	if(m>27)
+	if(m>17)
 	{
 		res = DAY_TIME_BLOCK::DAY_NIGHT_BLOCK;
 	}
@@ -101,31 +94,6 @@ struct tm * SZTimeSystem::getGameStartTime()
 {
 	return gameStartTime;
 }
-
- bool SZTimeSystem::shouldGoDark()
- {
-	 return isShouldGoDark;
- }
-
- void SZTimeSystem::updateStatus( float delta )
- {
-	 if(currentDayBlock != SZTimeSystem::getInstance()->getDayStatus()||currentDayBlock == DAY_TIME_BLOCK_NONE)
-	 {
-		 currentDayBlock = SZTimeSystem::getInstance()->getDayStatus();
-		 if(currentDayBlock = DAY_NIGHT_BLOCK)
-		 {
-			 isShouldGoDark = true;
-		 }
-	 }
- }
-
- void SZTimeSystem::setShouldGoDark(bool val)
- {
-	  isShouldGoDark = val;
- }
-
-
-
 
 
 

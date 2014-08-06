@@ -14,7 +14,6 @@ class SZTimeSystem:public cocos2d::Node
 {
 public:
 	virtual bool init();  
-	void updateStatus(float delta);
 	CREATE_FUNC(SZTimeSystem);
 	static SZTimeSystem* getInstance();
 	void startSystem();
@@ -22,8 +21,6 @@ public:
 	DAY_TIME_BLOCK getDayStatus();
 	struct tm * getGameStartTime();
 	int* getGameStartTimeArray();
-	bool shouldGoDark();
-	void setShouldGoDark(bool val);
 protected:
 private:
 	float timeStep;
@@ -31,8 +28,6 @@ private:
 	static SZTimeSystem* instance;
 	int gameStartTime[5];
 	struct tm *startTime;
-	static DAY_TIME_BLOCK currentDayBlock;
-	bool isShouldGoDark;
 };
 
 #endif
