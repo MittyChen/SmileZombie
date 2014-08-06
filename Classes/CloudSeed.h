@@ -60,7 +60,6 @@ private:
 	static float CLOUD_SIZE_SCALE;
 	static int CLOUD_SUM;
 	static float CLOUD_SEED_BREAKTIME;
-	static DAY_TIME_BLOCK currentDayBlock;
 };
 
 #endif // __CLOUD_SEED_H__
