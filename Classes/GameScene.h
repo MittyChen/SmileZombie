@@ -40,6 +40,7 @@ public:
 	 void cleanupParticleSystem(float dt);
 	 void touchEvent(cocos2d::Ref *pSender, cocos2d::ui::Widget::TouchEventType type);
 
+	 	static cocos2d::LabelTTF* dayStatusLabel;
 private:
 	LonelyFlower * mFlower;
 	cocos2d::CCParticleSystem *memitter;
@@ -49,6 +50,7 @@ private:
 	cocostudio::CCArmature* armature;
 	SurroundingsSprite * gameBG;
 	static GameScene * instance;
+
 public:
 	enum NodeZorder
 	{

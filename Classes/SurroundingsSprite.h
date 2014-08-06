@@ -15,20 +15,19 @@ public:
 #endif
 	}
 	virtual bool init();
-	virtual void update(float delta);
 	CREATE_FUNC(SurroundingsSprite);
 	void setTextureByindex(int index );
 	const char* getSpiriteName(int index);//picture name from 0 to maxindex
 	int randTexture(int maxVa);
 	void initBaseTexture(	const char* filePrefix,const char* filetype,int max_index);
 	void goDark(float dt);
-protected:
+private:
 	const char* filePrefix;
 	const char* fileType;
 	int max_index;
 	float nightDarkRate;
-	 cocos2d::GLProgramState* _glprogramstate;
-	 static DAY_TIME_BLOCK currentDayBlock;
+	cocos2d::GLProgramState* _glprogramstate;
+	float darkDegreeTarget;
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 	cocos2d::EventListenerCustom* _backgroundListener;
 #endif

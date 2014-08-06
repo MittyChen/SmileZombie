@@ -9,7 +9,8 @@ USING_NS_CC;
 using namespace cocostudio;
 using namespace cocos2d::extension;
 
- GameScene * GameScene::instance = NULL;
+GameScene * GameScene::instance = NULL;
+cocos2d::LabelTTF* GameScene::dayStatusLabel = NULL;
 GameScene::GameScene(void)
 {
 	flowerAn  =  0;
@@ -133,6 +134,19 @@ bool GameScene::init()
 	// add the label as a child to this layer
 	this->addChild(label, 1);
 
+	dayStatusLabel=LabelTTF::create("day", "Arial", 24);
+
+	dayStatusLabel->setPosition(Vec2(origin.x + visibleSize.width/6,origin.y + visibleSize.height*5/6));
+	cocos2d::String* mstr = cocos2d::String::createWithFormat("%d",SZTimeSystem::currentDayBlock);
+	GameScene::dayStatusLabel->setString(mstr->getCString());
+	this->addChild(dayStatusLabel);
+
+	auto details=LabelTTF::create("day", "Arial", 12);
+	details->setPosition(Vec2(origin.x + visibleSize.width/3,origin.y + visibleSize.height*2/6));
+	details->setString("1=NIGHT 7 = DUSK 8 = MORNING 10=DAY 0=NONE");
+	this->addChild(details);
+
+
     return true;
 }
 
@@ -206,6 +220,9 @@ void GameScene::menuCloseCallback(Ref* pSender)
 		 mFlower->setRotation(flowerAn);//flower rotate
 		 mFlower->flowerBreath();
 	 }
+
+	 cocos2d::String* mstr = cocos2d::String::createWithFormat("%d",SZTimeSystem::currentDayBlock);
+	 GameScene::dayStatusLabel->setString(mstr->getCString());
  }
 
  void GameScene::setParticlesystem(Vec2 mlocation,float amAngle)

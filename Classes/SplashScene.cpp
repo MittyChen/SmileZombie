@@ -1,6 +1,9 @@
 #include "SplashScene.h"
 #include "MainMenuScene.h"
+#include "cocostudio/CCArmature.h"
+
 USING_NS_CC;
+using namespace cocostudio;
 
 Scene* SplashScene::createScene()
 {
@@ -33,18 +36,24 @@ bool SplashScene::init()
 	/////////////////////////////
 	// 3. add your codes below...
 
-	// add "HelloWorld" splash screen"
-	auto sprite = Sprite::create("giraffe.png");
+	//// add "HelloWorld" splash screen"
+	//auto sprite = Sprite::create("baby.png");
+	//// position the sprite on the center of the screen
+	//sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+	//// add the sprite as a child to this layer
+	//this->addChild(sprite, 0);
+	//FadeOut* mFade =  FadeOut::create(3.0f);
+	//sprite->runAction(mFade);
+	//scheduleOnce(schedule_selector(SplashScene::goGameScene) , 3.0f);
 
-	// position the sprite on the center of the screen
-	sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-	// add the sprite as a child to this layer
-	this->addChild(sprite, 0);
+	cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("giftest/giftest0.png","giftest/giftest0.plist","giftest/giftest.ExportJson");
+	CCArmature *armature = CCArmature::create("giftest");
+	armature->getAnimation()->playByIndex(0);
+	armature->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+	addChild(armature);
 	FadeOut* mFade =  FadeOut::create(3.0f);
-	sprite->runAction(mFade);
+	armature->runAction(mFade);
 	scheduleOnce(schedule_selector(SplashScene::goGameScene) , 3.0f);
-
 	this->scheduleUpdate();  
 
 	return true;
