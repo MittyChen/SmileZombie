@@ -2,8 +2,13 @@
 #include "SZTimeSystem.h"
 #include <time.h>
 #include <stdio.h> 
-
+#include "GameScene.h"
+using namespace cocos2d;
 SZTimeSystem* SZTimeSystem::instance= NULL;
+DAY_TIME_BLOCK SZTimeSystem::currentDayBlock = DAY_TIME_BLOCK_NONE; 
+DAY_TIME_BLOCK  SZTimeSystem::lastDayBlock = DAY_TIME_BLOCK_NONE; 
+DAY_TIME_BLOCK  SZTimeSystem::nextDayBlock = DAY_TIME_BLOCK_NONE; 
+bool SZTimeSystem::isNeedChangeStatus = false;
 
 void SZTimeSystem::startSystem()
 {
@@ -27,7 +32,9 @@ void SZTimeSystem::startSystem()
 	gameStartTime[3] = minite;//·Ö
 	gameStartTime[4] = second;//Ãë
 	
+	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), this, 1, false);
 
+	//this->schedule(schedule_selector(SZTimeSystem::updateStatus) ,1.0f,kRepeatForever, 0.0f);
 }
 
 void SZTimeSystem::setTimeStep(float timest)
@@ -49,36 +56,32 @@ bool SZTimeSystem::init()
 {
 	__super::init();
 	startTime = NULL;
+	isNeedChangeStatus = false;
 	return true;
 }
 
 DAY_TIME_BLOCK SZTimeSystem::getDayStatus()
 {
-	DAY_TIME_BLOCK res;
+	DAY_TIME_BLOCK res = DAY_DAY_TIME_BLOCK;
 	struct tm *newtime;
 	time_t long_time;
 	time( &long_time ); //Get time as long integer
 	newtime = localtime( &long_time ); 
-	int h = newtime->tm_hour;
+	int h = newtime->tm_sec;
 	int m = newtime->tm_min;
 
-	if(h>5&&h<7)
+	if(h>0&&h<10)
 	{
 		res = DAY_TIME_BLOCK::DAY_MORNING_BLOCK;
-	}else if(h>7&&h<17)
+	}else if(h>10&&h<40)
 	{
 		res = DAY_TIME_BLOCK::DAY_DAY_TIME_BLOCK;
 	}
-	else if(h>17&&h<19)
+	else if(h>40&&h<50)
 	{
 		res = DAY_TIME_BLOCK::DAY_DUSK_BLOCK;
 	}
 	else
-	{
-		res = DAY_TIME_BLOCK::DAY_NIGHT_BLOCK;
-	} 
-
-	if(m>17)
 	{
 		res = DAY_TIME_BLOCK::DAY_NIGHT_BLOCK;
 	}
@@ -95,7 +98,72 @@ struct tm * SZTimeSystem::getGameStartTime()
 	return gameStartTime;
 }
 
+ bool SZTimeSystem::needChangeStatus()
+ {
+	 return isNeedChangeStatus;
+ }
+
+ void SZTimeSystem::updateStatus( float delta )
+ {
+	 if(getDayStatus() != currentDayBlock)
+	 {
+		 lastDayBlock = currentDayBlock;
+
+		 currentDayBlock = getDayStatus();
+		 
+		 nextDayBlock = getNextStatus();
+
+		 isNeedChangeStatus = true;
+		 
+	 }
+ }
+
+ void SZTimeSystem::setNeedChangeStatus( bool val )
+ {
+	 SZTimeSystem::isNeedChangeStatus = val;
+ }
+
+ DAY_TIME_BLOCK SZTimeSystem::getNextStatus()
+ {
+		//DAY_NIGHT_BLOCK= 1,//ºÚÒ¹
+		// DAY_DUSK_BLOCK = 7,//»Æ»è
+		// DAY_MORNING_BLOCK = 8,//Çå³¿
+		// DAY_DAY_TIME_BLOCK = 10,//°×Ìì
+		// DAY_TIME_BLOCK_NONE = 0//ÎÞ×´Ì¬
+
+	 //time state machine
+	switch(currentDayBlock)
+	{
+	case DAY_NIGHT_BLOCK:
+		return DAY_MORNING_BLOCK;
+		break;
 
 
+	case DAY_DUSK_BLOCK:
+		return DAY_NIGHT_BLOCK;
+		break;
 
 
+	case DAY_MORNING_BLOCK:
+		return DAY_DAY_TIME_BLOCK;
+		break;
+
+
+	case DAY_DAY_TIME_BLOCK:
+		return DAY_DUSK_BLOCK;
+		break;
+
+
+	case DAY_TIME_BLOCK_NONE:
+		return DAY_MORNING_BLOCK;
+		break;
+
+	default:
+		return DAY_MORNING_BLOCK;
+		break;
+	};
+	
+
+
+	 return DAY_TIME_BLOCK_NONE;
+ }

@@ -11,6 +11,7 @@
 USING_NS_CC; 
 
 using namespace ui;
+
 class MainMenuScene : public cocos2d::Layer
 {
 public:
