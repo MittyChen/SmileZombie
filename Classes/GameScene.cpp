@@ -48,10 +48,22 @@ bool GameScene::init()
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	particleTexture = TextureCache::sharedTextureCache()->addImage("flowers/flower_1.png");
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+		particleTexture = TextureCache::sharedTextureCache()->addImage("flowers/flower_1.png");
+#else
+		particleTexture = TextureCache::sharedTextureCache()->addImage("flower_1.png");
+#endif
+
+
 
 	gameBG = SurroundingsSprite::create();
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 	gameBG->initBaseTexture("mapbg/dungeon_battle_","jpg",13);
+#else
+		gameBG->initBaseTexture("dungeon_battle_","jpg",13);
+#endif
+
 
 	/*auto mTopLayer = LayerColor::create(ccc4(0,50,50,255));
 	mTopLayer->setZOrder(TOP_LAYER_ZORDER);

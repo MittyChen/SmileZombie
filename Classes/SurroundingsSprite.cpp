@@ -8,7 +8,10 @@ USING_NS_CC;
 // on "init" you need to initialize your instance
 bool SurroundingsSprite::init()
 {
-	__super::init();
+	if(!Sprite::init())
+	{
+		return false;
+	}
 	nightDarkRate = 1.0f;
 	return true;
 }
@@ -122,15 +125,4 @@ void SurroundingsSprite::goDark(float dt)
 			}
 		}
 	}
-	
-
-		//if(SZTimeSystem::getInstance()->shouldGoDark() && nightDarkRate > 0.1f)
-		//{
-		//	//_glprogramstate->setUniformFloat("nightDegree", nightDarkRate-=0.03f);
-		//	//if(nightDarkRate < 0.1f)
-		//	//{
-		//	//	SZTimeSystem::getInstance()->setShouldGoDark(false);
-		//	//}
-		//}
-
 }

@@ -45,7 +45,7 @@ public:
 	void setSeedType(CLOUD_SEED_TYPE type);
 	void setCloudFixedHeight(float cHeight);
 	void initSingleCloud( Cloud* mSpir );
-
+	void clearCloud(float dt);
 private:
 	static CloudSeed * instance;
 	static cocos2d::Vector<Cloud*> mSpriteList;

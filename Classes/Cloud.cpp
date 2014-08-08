@@ -5,7 +5,10 @@ USING_NS_CC;
 // on "init" you need to initialize your instance
 bool Cloud::init()
 {
-	__super::init();
+	if(!Sprite::init())
+	{
+		return false;
+	}
 	initCloudTexture();
 	return true;
 }
@@ -14,12 +17,19 @@ const char* Cloud::getSpiriteName(int index)
 	CCLOG("Cloud::getSpiriteName  %d",index);
 	if(index>=0 && index<=4)
 	{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 		CCString* resToRet = CCString::createWithFormat( "clouds/cloud%d.png",index);
-
+#else
+		CCString* resToRet = CCString::createWithFormat( "cloud%d.png",index);
+#endif
 		return resToRet->getCString();
 	}
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 	return  "clouds/cloud2.png";
+#else
+	return  "cloud2.png";
+#endif
 
 }
 
@@ -32,15 +42,20 @@ int Cloud::randTexture()
 
 void  Cloud::initCloudTexture()
 {
-	this->setTexture(getSpiriteName(randTexture()));
-	if(SZTimeSystem::getInstance()->getDayStatus() == DAY_TIME_BLOCK::DAY_NIGHT_BLOCK)
-	{
-		auto fileUtiles = FileUtils::getInstance();
-		auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/greycloud.fsh");
-		auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
-		auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
-		this->setGLProgramState(GLProgramState::getOrCreateWithGLProgram(glprogram));
+	setTexture(getSpiriteName(randTexture()));
 
+	if(SZTimeSystem::getInstance()->getDayChangeGLState() != NULL)
+	{
+		//setGLProgramState(SZTimeSystem::getInstance()->getDayChangeGLState() );	
+	}
+
+	/*auto fileUtiles = FileUtils::getInstance();
+	auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/night.fsh");
+	auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
+	auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
+	GLProgramState *_glprogramstate = GLProgramState::getOrCreateWithGLProgram(glprogram);
+	_glprogramstate->setUniformFloat("nightDegree", 0.1f* SZTimeSystem::getInstance()->getDayStatus());
+	
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 		_backgroundListener = EventListenerCustom::create(EVENT_RENDERER_RECREATED,
 			[this](EventCustom*)
@@ -52,17 +67,7 @@ void  Cloud::initCloudTexture()
 		}
 		);
 		Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backgroundListener, -1);
-#endif
-	}
-else
-{//addNormal shader
-	this->setShaderProgram(ShaderCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
-}
-}
-
-void Cloud::setTexture(const std::string &filename)
-{
-	__super::setTexture(filename);
+#endif*/
 }
 
 void Cloud::flowerBreath()
@@ -91,11 +96,4 @@ void Cloud::setCloudDirection(int dir)
 int Cloud::getCloudDirection()
 {
 	return cloudDirection;
-}
-
- bool Cloud::initWithTexture(Texture2D *texture)
-{
-	__super::initWithTexture(texture);
-
-	return true;
 }

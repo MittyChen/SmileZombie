@@ -9,6 +9,7 @@ DAY_TIME_BLOCK SZTimeSystem::currentDayBlock = DAY_TIME_BLOCK_NONE;
 DAY_TIME_BLOCK  SZTimeSystem::lastDayBlock = DAY_TIME_BLOCK_NONE; 
 DAY_TIME_BLOCK  SZTimeSystem::nextDayBlock = DAY_TIME_BLOCK_NONE; 
 bool SZTimeSystem::isNeedChangeStatus = false;
+float SZTimeSystem::nightDarkRate = 1.0f;
 
 void SZTimeSystem::startSystem()
 {
@@ -32,7 +33,9 @@ void SZTimeSystem::startSystem()
 	gameStartTime[3] = minite;//·Ö
 	gameStartTime[4] = second;//Ãë
 	
-	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), this, 1, false);
+	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), this, 0.1f, false);
+
+	//CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::goDark), this, 0.1f, false);
 
 	//this->schedule(schedule_selector(SZTimeSystem::updateStatus) ,1.0f,kRepeatForever, 0.0f);
 }
@@ -54,9 +57,16 @@ SZTimeSystem* SZTimeSystem::getInstance()
 
 bool SZTimeSystem::init()
 {
-	__super::init();
+	if(!Node::init())
+	{
+		return false;
+	}
 	startTime = NULL;
+
 	isNeedChangeStatus = false;
+
+	initGameTimeShader();
+
 	return true;
 }
 
@@ -73,11 +83,11 @@ DAY_TIME_BLOCK SZTimeSystem::getDayStatus()
 	if(h>0&&h<10)
 	{
 		res = DAY_TIME_BLOCK::DAY_MORNING_BLOCK;
-	}else if(h>10&&h<40)
+	}else if(h>10&&h<30)
 	{
 		res = DAY_TIME_BLOCK::DAY_DAY_TIME_BLOCK;
 	}
-	else if(h>40&&h<50)
+	else if(h>30&&h<35)
 	{
 		res = DAY_TIME_BLOCK::DAY_DUSK_BLOCK;
 	}
@@ -114,8 +124,8 @@ struct tm * SZTimeSystem::getGameStartTime()
 		 nextDayBlock = getNextStatus();
 
 		 isNeedChangeStatus = true;
-		 
 	 }
+	 //goDark(delta);
  }
 
  void SZTimeSystem::setNeedChangeStatus( bool val )
@@ -163,7 +173,64 @@ struct tm * SZTimeSystem::getGameStartTime()
 		break;
 	};
 	
-
-
 	 return DAY_TIME_BLOCK_NONE;
+ }
+
+ void SZTimeSystem::initGameTimeShader()
+ {
+	 auto fileUtiles = FileUtils::getInstance();
+	 auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/night.fsh");
+	 auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
+	 auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
+	 nightDarkRate = 0.1f* getDayStatus();
+	 glprogramstate_dark = GLProgramState::getOrCreateWithGLProgram(glprogram);
+	 glprogramstate_dark->setUniformFloat("nightDegree", nightDarkRate);
+
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	 _backgroundListener = EventListenerCustom::create(EVENT_RENDERER_RECREATED,
+		 [this](EventCustom*)
+	 {
+		 glprogram->reset();
+		 glprogram->initWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
+		 glprogram->link();
+		 glprogram->updateUniforms();
+	 }
+	 );
+	 Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backgroundListener, -1);
+#endif
+ }
+
+ void SZTimeSystem::goDark(float dt)
+ {
+	 if(needChangeStatus() )
+	 {
+		 if(currentDayBlock < lastDayBlock  )
+		 {
+			 if( nightDarkRate >(0.1f * currentDayBlock))
+			 {
+				 glprogramstate_dark->setUniformFloat("nightDegree", nightDarkRate-=0.02f);
+				 if(nightDarkRate < (0.1f * currentDayBlock) )
+				 {
+					 setNeedChangeStatus(false);
+				 }
+			 }
+		 }
+		 else
+		 {
+			 if( nightDarkRate < (0.1f * currentDayBlock))
+			 {
+				 glprogramstate_dark->setUniformFloat("nightDegree", nightDarkRate+=0.02f);
+				 if(nightDarkRate > (0.1f*currentDayBlock))
+				 {
+					setNeedChangeStatus(false);
+				 }			
+			 }
+		 }
+	 }
+ }
+
+ cocos2d::GLProgramState* SZTimeSystem::getDayChangeGLState()
+ {
+	 return this->glprogramstate_dark;
  }

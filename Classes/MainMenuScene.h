@@ -7,6 +7,7 @@
 #include "cocos-ext.h"
 #include "cocostudio/CCArmature.h"
 #include "ui/UIWidget.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC; 
 

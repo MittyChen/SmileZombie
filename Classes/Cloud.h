@@ -9,16 +9,13 @@ class Cloud : public cocos2d::Sprite
 public:
 	virtual bool init();  
 	CREATE_FUNC(Cloud);
-	virtual void setTexture(const std::string &filename );
 	const char* getSpiriteName(int index);
 	int randTexture();
 	void flowerBreath();
 	void initCloudTexture();
 	void setCloudDirection(int dir);
 	int getCloudDirection();
-	virtual bool initWithTexture(cocos2d::Texture2D *texture);
 	int cloudDirection;
-
 	//shaders
 protected:
 	Cloud()

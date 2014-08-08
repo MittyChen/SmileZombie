@@ -11,7 +11,6 @@ public:
 
 	CREATE_FUNC(LonelyFlower);
 
-	virtual void setTexture(const std::string &filename );
 	const char* getSpiriteName(int index);
 
 	int randTexture();

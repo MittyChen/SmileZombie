@@ -6,7 +6,10 @@ USING_NS_CC;
 // on "init" you need to initialize your instance
 bool LonelyFlower::init()
 {
-	__super::init();
+	if(!Sprite::init())
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -16,12 +19,19 @@ const char* LonelyFlower::getSpiriteName(int index)
 	CCLOG("LonelyFlower::getSpiriteName  %d",index);
 	if(index>=0 && index<=3)
 	{
-		CCString* resToRet = CCString::createWithFormat( "flowers/flower_%d.png",index);
-		
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+				CCString* resToRet = CCString::createWithFormat( "flowers/flower_%d.png",index);
+#else
+				CCString* resToRet = CCString::createWithFormat( "flower_%d.png",index);
+#endif
 		return resToRet->getCString();
 	}
-	return  "flowers/flower_2.png";
-		
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+		return  "flowers/flower_2.png";
+#else
+		return  "flower_2.png";
+#endif
 }
 
 int LonelyFlower::randTexture()
@@ -34,11 +44,6 @@ int LonelyFlower::randTexture()
 void  LonelyFlower::initFlowerTexture()
 {
 	this->setTexture(getSpiriteName(randTexture()));
-}
-
-void LonelyFlower::setTexture(const std::string &filename)
-{
-	__super::setTexture(filename);
 }
 
 void LonelyFlower::flowerBreath()

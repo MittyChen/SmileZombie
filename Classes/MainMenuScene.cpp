@@ -10,6 +10,8 @@ USING_NS_CC;
 using namespace cocostudio;
 using namespace cocos2d::extension;
 using namespace ui;
+using namespace  CocosDenshion;
+
 MainMenuScene::MainMenuScene(void)
 {
 	flowerAn  =  0;
@@ -48,94 +50,125 @@ bool MainMenuScene::init()
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	/*auto mTopLayer = LayerColor::create(ccc4(0,50,50,255));
-	mTopLayer->setZOrder(TOP_LAYER_ZORDER);
-	this->addChild(mTopLayer);*/
 
-	auto bgSpirit = Sprite::create("gamebg.jpg");
-	bgSpirit->setPosition(Vec2(origin.x + visibleSize.width - bgSpirit->getContentSize().width/2 ,
-		origin.y + bgSpirit->getContentSize().height/2));
-
-	bgSpirit->setZOrder(TOP_LAYER_ZORDER);
-
-	this->addChild(bgSpirit);
-
-	mclouds = NULL;
-
-	auto event =EventListenerTouchOneByOne::create();
-	event->onTouchBegan = CC_CALLBACK_2(MainMenuScene::onTouchBegan,this);
-	event->onTouchCancelled = CC_CALLBACK_2(MainMenuScene::onTouchCancelled,this);
-	event->onTouchEnded = CC_CALLBACK_2(MainMenuScene::onTouchEnded,this);
-	event->onTouchMoved = CC_CALLBACK_2(MainMenuScene::onTouchMoved,this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(event,this);
-
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(MainMenuScene::menuCloseCallback, this));
-    
-	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-                                origin.y + closeItem->getContentSize().height/2));
-
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
-	do
+		//UI Block
 	{
-		CC_BREAK_IF(! Layer::init());
-		this->scheduleUpdate();
-	} while (0);
-	 
-	if(!mclouds)
+		
+		/*auto mTopLayer = LayerColor::create(ccc4(0,50,50,255));
+		mTopLayer->setZOrder(TOP_LAYER_ZORDER);
+		this->addChild(mTopLayer);*/
+
+		auto bgSpirit = Sprite::create("gamebg.jpg");
+		bgSpirit->setPosition(Vec2(origin.x + visibleSize.width - bgSpirit->getContentSize().width/2 ,
+			origin.y + bgSpirit->getContentSize().height/2));
+		bgSpirit->setZOrder(TOP_LAYER_ZORDER);
+		this->addChild(bgSpirit);
+
+		auto closeItem = MenuItemImage::create(
+			"CloseNormal.png",
+			"CloseSelected.png",
+			CC_CALLBACK_1(MainMenuScene::menuCloseCallback, this));
+
+		closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
+			origin.y + closeItem->getContentSize().height/2));
+
+		// create menu, it's an autorelease object
+		auto menu = Menu::create(closeItem, NULL);
+		menu->setPosition(Vec2::ZERO);
+		this->addChild(menu, 1);
+
+		auto label = LabelTTF::create("MainMenu Scene", "Arial", 24);
+		// position the label on the center of the screen
+		label->setPosition(Vec2(origin.x + visibleSize.width/2,
+			origin.y + visibleSize.height - label->getContentSize().height));
+
+		// add the label as a child to this layer
+		this->addChild(label, 1);
+
+
+		// Create the button
+		Button* button = Button::create("twitterdefault.png","twitterdown.png");
+		button->setPosition(button->getSize());
+		button->addTouchEventListener(CC_CALLBACK_2(MainMenuScene::touchEvent, this));
+		button->setScale(0.5);
+		this->addChild(button);
+	}
+
+	//Sound Block
 	{
-		mclouds = CloudSeed::create();
-		//mclouds->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
-		struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
-		mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
-		//mclouds->setCloudFixedHeight(300);
-		mclouds->startCloudEngine();
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.5);  
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/background_M_Menu.mid",1); 
+#else
+		SimpleAudioEngine::getInstance()->preloadBackgroundMusic("background_M_Menu.mid");
+		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.5);  
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("background_M_Menu.mid"); 
+#endif
+
+ 
 	}
 
 
+	//Touch Block
+	{
+		auto event =EventListenerTouchOneByOne::create();
+		event->onTouchBegan = CC_CALLBACK_2(MainMenuScene::onTouchBegan,this);
+		event->onTouchCancelled = CC_CALLBACK_2(MainMenuScene::onTouchCancelled,this);
+		event->onTouchEnded = CC_CALLBACK_2(MainMenuScene::onTouchEnded,this);
+		event->onTouchMoved = CC_CALLBACK_2(MainMenuScene::onTouchMoved,this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(event,this);
+
+	}
+
+	//Time Block
+	{
+		SZTimeSystem::getInstance();
+	}
+
+
+	//Elements Block
+	{
+		mclouds = NULL;
+
+		if(!mclouds)
+		{
+			mclouds = CloudSeed::create();
+			//mclouds->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
+			struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
+			mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
+			//mclouds->setCloudFixedHeight(300);
+			mclouds->startCloudEngine();
+		}
+
+
 		this->schedule(schedule_selector(MainMenuScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
+		{
+			////¹Ç÷À¶¯»­
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+			cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
+
+#else
+			cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("bird0.png","bird0.plist","bird.ExportJson");
+#endif
+			armature = cocostudio::CCArmature::create("bird");
+			armature->getAnimation()->playByIndex(0);
+			armature->setScale(0.6);
+			armature->getAnimation()->setSpeedScale(0.5);
+			armature->setPosition(ccp(900,600));
+			armature->setRotation(-25);
+
+			auto mfly = CCMoveTo::create(5,Vec2(100,600));
+			armature->runAction(mfly);
+			addChild(armature);
+		}
+
+	}
 
 
-	////¹Ç÷À¶¯»­
-	cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
-	armature = cocostudio::CCArmature::create("bird");
-	armature->getAnimation()->playByIndex(0);
-	armature->setScale(0.6);
-	armature->getAnimation()->setSpeedScale(0.5);
-	armature->setPosition(ccp(900,600));
-	armature->setRotation(-25);
-	
-	auto mfly = CCMoveTo::create(5,Vec2(100,600));
-	armature->runAction(mfly);
-	addChild(armature);
-
-
-
-
-	auto label = LabelTTF::create("MainMenu Scene", "Arial", 24);
-
-	// position the label on the center of the screen
-	label->setPosition(Vec2(origin.x + visibleSize.width/2,
-		origin.y + visibleSize.height - label->getContentSize().height));
-
-	// add the label as a child to this layer
-	this->addChild(label, 1);
-
-
-
-	// Create the button
-	Button* button = Button::create("twitterdefault.png","twitterdown.png");
-	button->setPosition(button->getSize());
-	button->addTouchEventListener(CC_CALLBACK_2(MainMenuScene::touchEvent, this));
-	button->setScale(0.5);
-	this->addChild(button);
-
-	SZTimeSystem::getInstance();
+	//Schedule Block
+	{
+		this->scheduleUpdate();
+	} 
 
     return true;
 }

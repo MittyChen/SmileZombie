@@ -19,7 +19,10 @@ float CloudSeed::CLOUD_SEED_BREAKTIME=3.0f;
 
 bool CloudSeed::init()
 {
-	__super::init();
+	if(!Node::init())
+	{
+		return false;
+	}
 	return true;
 }
 
@@ -104,17 +107,6 @@ void CloudSeed::initCloudEngine(Layer *layer,struct BounsStruct mstrct,CLOUD_SEE
 }
 void CloudSeed::seedClouds(float dt)
 {
-	if(SZTimeSystem::getInstance()->needChangeStatus() )
-	{ 
-		for(int i = 0 ; i < mSpriteList.size() ; i++)
-		{
-			auto mSpir = (Cloud*)mSpriteList.at(i);//×´Ì¬¸Ä±äÔÆ¶ä½¥Òþ 
-			mSpir->runAction(CCFadeOut::create(2));
-		}
-
-		CCLOG("the day  statu is changed");
-	}
-
 	for(int i = 0 ; i < mSpriteList.size() ; i++)
 	{
 		auto mSpir = (Cloud*)mSpriteList.at(i);
@@ -237,5 +229,16 @@ void CloudSeed::initSingleCloud( Cloud* mSpi )
 	}
 
 			mSpi->setScale(getCloudScaleRamdomRate()*CLOUD_SIZE_SCALE);
+}
+
+void CloudSeed::clearCloud( float dt )
+{
+	for(int i = 0 ; i < mSpriteList.size() ; i++)
+	{
+		auto mSpir = (Cloud*)mSpriteList.at(i);//×´Ì¬¸Ä±äÔÆ¶ä½¥Òþ 
+		mSpir->runAction(CCFadeOut::create(2));
+	}
+
+	CCLOG("the day  statu is changed");
 }
 
