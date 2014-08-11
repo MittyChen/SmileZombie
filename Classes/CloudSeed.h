@@ -46,6 +46,7 @@ public:
 	void setCloudFixedHeight(float cHeight);
 	void initSingleCloud( Cloud* mSpir );
 	void clearCloud(float dt);
+	void setUseRandomScale(bool val);
 private:
 	static CloudSeed * instance;
 	static cocos2d::Vector<Cloud*> mSpriteList;
@@ -60,6 +61,7 @@ private:
 	static float CLOUD_SIZE_SCALE;
 	static int CLOUD_SUM;
 	static float CLOUD_SEED_BREAKTIME;
+	int useRandomScale;
 };
 
 #endif // __CLOUD_SEED_H__

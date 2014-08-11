@@ -1,4 +1,5 @@
 #include "Cloud.h"
+#include "Consts.h"
 
 USING_NS_CC;
 
@@ -15,28 +16,18 @@ bool Cloud::init()
 const char* Cloud::getSpiriteName(int index)
 {
 	CCLOG("Cloud::getSpiriteName  %d",index);
-	if(index>=0 && index<=4)
+	if(index>=0 && index<=CLOUD_PICTURE_MAX_INDEX)
 	{
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-		CCString* resToRet = CCString::createWithFormat( "clouds/cloud%d.png",index);
-#else
-		CCString* resToRet = CCString::createWithFormat( "cloud%d.png",index);
-#endif
+		CCString* resToRet = CCString::createWithFormat( "%s%d.%s",CLOUD_PICTURE_PREFIX,index,CLOUD_PICTURE_TYPE);
 		return resToRet->getCString();
 	}
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-	return  "clouds/cloud2.png";
-#else
-	return  "cloud2.png";
-#endif
-
+	return  CLOUD_PICTURE_DEFAULT;
 }
 
 int Cloud::randTexture()
 {
 	srand( (unsigned)time( NULL ) ); 
-	return rand()%5;
+	return rand()%(CLOUD_PICTURE_MAX_INDEX+1);
 }
 
 

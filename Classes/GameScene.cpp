@@ -3,7 +3,7 @@
 #include "UIButton.h"
 
 #include "MainMenuScene.h"
-
+#include "Consts.h"
 USING_NS_CC;
 
 using namespace cocostudio;
@@ -59,7 +59,7 @@ bool GameScene::init()
 	gameBG = SurroundingsSprite::create();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-	gameBG->initBaseTexture("mapbg/dungeon_battle_","jpg",13);
+	gameBG->initBaseTexture(GAME_SCENE_BACKGROUND_PICTURE_PREFIX,GAME_SCENE_BACKGROUND_PICTURE_TYPE,GAME_SCENE_BACKGROUND_PICTURE_£ÍAXINDEX);
 #else
 		gameBG->initBaseTexture("dungeon_battle_","jpg",13);
 #endif
@@ -69,7 +69,8 @@ bool GameScene::init()
 	mTopLayer->setZOrder(TOP_LAYER_ZORDER);
 	this->addChild(mTopLayer);*/
 
-	gameBG->setTextureByindex(2);//set bg handly
+	//gameBG->setTextureByindex(2);//set bg handly
+	gameBG->setTexture("bgtest.png");
 	gameBG->setPosition(Vec2(origin.x + visibleSize.width - gameBG->getContentSize().width/2 ,
 		origin.y + gameBG->getContentSize().height/2));
 
@@ -86,18 +87,7 @@ bool GameScene::init()
 	event->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved,this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(event,this);
 
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(GameScene::menuCloseCallback, this));
-    
-	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-                                origin.y + closeItem->getContentSize().height/2));
 
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
 	do
 	{
 		CC_BREAK_IF(! Layer::init());
@@ -107,10 +97,11 @@ bool GameScene::init()
 	if(!mclouds)
 	{
 		mclouds = CloudSeed::create();
+		mclouds->setUseRandomScale(false);
 		//mclouds->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
 		struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
-		mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
-		mclouds->setCloudFixedHeight(300);
+		mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_FROM_RIGHT,TOP_LAYER_ZORDER);
+		mclouds->setCloudFixedHeight(100);
 		mclouds->startCloudEngine();
 	}
 	this->schedule(schedule_selector(GameScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
@@ -131,10 +122,9 @@ bool GameScene::init()
 
 
 	// Create the button
-	Button* button = Button::create("twitterdefault.png","twitterdown.png");
-	button->setPosition(button->getSize());
+	Button* button = Button::create(HOME_PICTURE_NORMAL,HOME_PICTURE_DOWN);
+	button->setPosition(Vec2(origin.x+button->getContentSize().width/2,origin.y+visibleSize.height-button->getContentSize().height/2));
 	button->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
-	button->setScale(0.5);
 	this->addChild(button);
 
 	auto label = LabelTTF::create("Game Scene", "Arial", 24);

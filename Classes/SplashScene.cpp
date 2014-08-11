@@ -33,10 +33,7 @@ bool SplashScene::init()
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	/////////////////////////////
-	// 3. add your codes below...
-
-	//// add "HelloWorld" splash screen"
+	
 	//auto sprite = Sprite::create("baby.png");
 	//// position the sprite on the center of the screen
 	//sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));

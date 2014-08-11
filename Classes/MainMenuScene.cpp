@@ -2,7 +2,7 @@
 #include "UIButton.h"
 #include "GameScene.h"
 #include "SZTimeSystem.h"
-
+#include "Consts.h"
 
 MainMenuScene * MainMenuScene::instance = NULL;
 
@@ -58,24 +58,12 @@ bool MainMenuScene::init()
 		mTopLayer->setZOrder(TOP_LAYER_ZORDER);
 		this->addChild(mTopLayer);*/
 
-		auto bgSpirit = Sprite::create("gamebg.jpg");
+		auto bgSpirit = Sprite::create(GAME_BACKGROUND_PICTURE);
 		bgSpirit->setPosition(Vec2(origin.x + visibleSize.width - bgSpirit->getContentSize().width/2 ,
 			origin.y + bgSpirit->getContentSize().height/2));
 		bgSpirit->setZOrder(TOP_LAYER_ZORDER);
 		this->addChild(bgSpirit);
 
-		auto closeItem = MenuItemImage::create(
-			"CloseNormal.png",
-			"CloseSelected.png",
-			CC_CALLBACK_1(MainMenuScene::menuCloseCallback, this));
-
-		closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-			origin.y + closeItem->getContentSize().height/2));
-
-		// create menu, it's an autorelease object
-		auto menu = Menu::create(closeItem, NULL);
-		menu->setPosition(Vec2::ZERO);
-		this->addChild(menu, 1);
 
 		auto label = LabelTTF::create("MainMenu Scene", "Arial", 24);
 		// position the label on the center of the screen
@@ -86,9 +74,33 @@ bool MainMenuScene::init()
 		this->addChild(label, 1);
 
 
-		// Create the button
-		Button* button = Button::create("twitterdefault.png","twitterdown.png");
-		button->setPosition(button->getSize());
+
+		//audio button
+		CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", true);
+		CCUserDefault::sharedUserDefault()->flush();
+
+		bool audioIsOn = CCUserDefault::sharedUserDefault()->getBoolForKey("AUDIO_ON");
+		const char* textureName = "";
+		if(audioIsOn)
+		{
+			textureName = BACKGROUND_MUSIC_ON;			
+		}
+		else{
+			textureName = BACKGROUND_MUSIC_OFF;
+		}
+
+		Button* audioButton = Button::create(textureName,textureName);
+		audioButton->addTouchEventListener(CC_CALLBACK_2(MainMenuScene::touchEvent, this));
+		
+		audioButton->setPosition(Vec2(origin.x+audioButton->getContentSize().width/2,origin.y+visibleSize.height/2-audioButton->getContentSize().height/2));
+
+		this->addChild(audioButton);
+
+
+		//game statrt button
+		Button* button = Button::create(GAME_START_BUTTON_NORMAL,GAME_START_BUTTON_DOWN);
+		button->setPosition(Vec2(origin.x + visibleSize.width/2 ,
+												origin.y + visibleSize.height/2 - button->getContentSize().height/2));
 		button->addTouchEventListener(CC_CALLBACK_2(MainMenuScene::touchEvent, this));
 		button->setScale(0.5);
 		this->addChild(button);
@@ -98,7 +110,7 @@ bool MainMenuScene::init()
 	{
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.5);  
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/background_M_Menu.mid",1); 
+		SimpleAudioEngine::getInstance()->playBackgroundMusic(GAME_BACKGROUND_MUSIC,1); 
 #else
 		SimpleAudioEngine::getInstance()->preloadBackgroundMusic("background_M_Menu.mid");
 		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.5);  
@@ -140,27 +152,26 @@ bool MainMenuScene::init()
 			mclouds->startCloudEngine();
 		}
 
-
 		this->schedule(schedule_selector(MainMenuScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
-		{
-			////¹Ç÷À¶¯»­
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-			cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
-
-#else
-			cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("bird0.png","bird0.plist","bird.ExportJson");
-#endif
-			armature = cocostudio::CCArmature::create("bird");
-			armature->getAnimation()->playByIndex(0);
-			armature->setScale(0.6);
-			armature->getAnimation()->setSpeedScale(0.5);
-			armature->setPosition(ccp(900,600));
-			armature->setRotation(-25);
-
-			auto mfly = CCMoveTo::create(5,Vec2(100,600));
-			armature->runAction(mfly);
-			addChild(armature);
-		}
+//		{
+//			////¹Ç÷À¶¯»­
+//#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+//			cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
+//
+//#else
+//			cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("bird0.png","bird0.plist","bird.ExportJson");
+//#endif
+//			armature = cocostudio::CCArmature::create("bird");
+//			armature->getAnimation()->playByIndex(0);
+//			armature->setScale(0.6);
+//			armature->getAnimation()->setSpeedScale(0.5);
+//			armature->setPosition(ccp(900,600));
+//			armature->setRotation(-25);
+//
+//			auto mfly = CCMoveTo::create(5,Vec2(100,600));
+//			armature->runAction(mfly);
+//			addChild(armature);
+//		}
 
 	}
 

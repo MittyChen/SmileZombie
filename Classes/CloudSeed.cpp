@@ -4,9 +4,9 @@
 using namespace  cocos2d;
 //cloud config
 float CloudSeed::CLOUD_SIZE_SCALE = 1.0f;
-float CloudSeed::CLOUD_MOVE_STEP =0.5f;
+float CloudSeed::CLOUD_MOVE_STEP =1.5f;
 int CloudSeed::CLOUD_SUM=6;
-float CloudSeed::CLOUD_SEED_BREAKTIME=3.0f;
+float CloudSeed::CLOUD_SEED_BREAKTIME=1.0f;
  CloudSeed * CloudSeed::instance = NULL;
 
  struct  BounsStruct  CloudSeed::cloudBounds = {960,800,-90,1024};
@@ -17,14 +17,14 @@ float CloudSeed::CLOUD_SEED_BREAKTIME=3.0f;
  bool  CloudSeed::hasFixedHeight =false;
  float  CloudSeed::cloudsFixedHeight = 600.0f;
 
-bool CloudSeed::init()
-{
-	if(!Node::init())
-	{
-		return false;
-	}
-	return true;
-}
+ bool CloudSeed::init()
+ {
+	 if(!Node::init())
+	 {
+		 return false;
+	 }
+	 return true;
+ }
 
 void CloudSeed::setBounds(float upBound,float downBound,float leftBound,float rightBound)
 {
@@ -142,6 +142,10 @@ void CloudSeed::seedClouds(float dt)
 
 float CloudSeed::getCloudScaleRamdomRate()
 {
+	if(useRandomScale)
+	{
+		return 1.0f;
+	}
 	return 0.01f*Random(10,90);
 }
 
@@ -240,5 +244,10 @@ void CloudSeed::clearCloud( float dt )
 	}
 
 	CCLOG("the day  statu is changed");
+}
+
+void CloudSeed::setUseRandomScale(bool val)
+{
+	this->useRandomScale = val;
 }
 

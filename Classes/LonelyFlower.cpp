@@ -1,5 +1,7 @@
-
 #include "LonelyFlower.h"
+#include "Consts.h"
+
+
 
 USING_NS_CC;
 
@@ -17,27 +19,18 @@ bool LonelyFlower::init()
 const char* LonelyFlower::getSpiriteName(int index)
 {
 	CCLOG("LonelyFlower::getSpiriteName  %d",index);
-	if(index>=0 && index<=3)
+	if(index>=0 && index<=FLOWER_PICTURE_MAX_INDEX)
 	{
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-				CCString* resToRet = CCString::createWithFormat( "flowers/flower_%d.png",index);
-#else
-				CCString* resToRet = CCString::createWithFormat( "flower_%d.png",index);
-#endif
+				CCString* resToRet = CCString::createWithFormat( "%s%d.%s",FLOWER_PICTURE_PREFIX,index,FLOWER_PICTURE_TYPE);
 		return resToRet->getCString();
 	}
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-		return  "flowers/flower_2.png";
-#else
-		return  "flower_2.png";
-#endif
+		return  FLOWER_PICTURE_DEFAULT;
 }
 
 int LonelyFlower::randTexture()
 {
 	srand( (unsigned)time( NULL ) ); 
-	return rand()%4;
+	return rand()%(FLOWER_PICTURE_MAX_INDEX+1);
 }
 
 
