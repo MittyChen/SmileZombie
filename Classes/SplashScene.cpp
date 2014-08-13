@@ -1,10 +1,10 @@
 #include "SplashScene.h"
 #include "MainMenuScene.h"
 #include "cocostudio/CCArmature.h"
-
+#include "Consts.h"
 USING_NS_CC;
 using namespace cocostudio;
-
+using namespace  CocosDenshion;
 Scene* SplashScene::createScene()
 {
 	// 'scene' is an autorelease object
@@ -51,7 +51,19 @@ bool SplashScene::init()
 	FadeOut* mFade =  FadeOut::create(3.0f);
 	armature->runAction(mFade);
 	scheduleOnce(schedule_selector(SplashScene::goGameScene) , 3.0f);
-	this->scheduleUpdate();  
+
+	//background music
+	{
+		SimpleAudioEngine::getInstance()->preloadBackgroundMusic(GAME_BACKGROUND_MUSIC);
+		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.2);  
+	}
+	
+
+
+	//Time Block
+	{
+		SZTimeSystem::getInstance();
+	}
 
 	return true;
 }

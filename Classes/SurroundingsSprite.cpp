@@ -13,6 +13,9 @@ bool SurroundingsSprite::init()
 		return false;
 	}
 	nightDarkRate = 1.0f;
+
+	initShaders();
+
 	return true;
 }
 
@@ -47,55 +50,8 @@ void  SurroundingsSprite::initBaseTexture(	const char* filePrefix,const char* fi
 
 void SurroundingsSprite::setTextureByindex(int index)
 {
-	auto fileUtiles = FileUtils::getInstance();
-	auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/night.fsh");
-	auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
-	auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
-	_glprogramstate = GLProgramState::getOrCreateWithGLProgram(glprogram);
-	_glprogramstate->setUniformFloat("nightDegree", 0.1f* SZTimeSystem::getInstance()->getDayStatus());
-
 
 	this->setTexture(getSpiriteName(index));
-	this->setGLProgramState(_glprogramstate);
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-		 _backgroundListener = EventListenerCustom::create(EVENT_RENDERER_RECREATED,
-			 [this](EventCustom*)
-		 {
-			 glprogram->reset();
-			 glprogram->initWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
-			 glprogram->link();
-			 glprogram->updateUniforms();
-		 }
-		 );
-		 Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backgroundListener, -1);
-#endif
-
-//	 if(SZTimeSystem::getInstance()->getDayStatus() == DAY_TIME_BLOCK::DAY_NIGHT_BLOCK)
-//	 {
-//		 schedule(schedule_selector( SurroundingsSprite::goDark) ,0.1f,kRepeatForever, 0.0f);
-//
-//		  //_glprogramstate->setUniformFloat("nightDegree", 0.1f);
-//		 this->setGLProgramState(_glprogramstate);
-//#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-//		 _backgroundListener = EventListenerCustom::create(EVENT_RENDERER_RECREATED,
-//			 [this](EventCustom*)
-//		 {
-//			 glprogram->reset();
-//			 glprogram->initWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
-//			 glprogram->link();
-//			 glprogram->updateUniforms();
-//		 }
-//		 );
-//		 Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backgroundListener, -1);
-//#endif
-//	 }
-//	 else
-//	 {//addNormal shader
-//		 this->setShaderProgram(ShaderCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
-//	 }
-	//
-	  schedule(schedule_selector( SurroundingsSprite::goDark) ,0.1f,kRepeatForever, 0.0f);
 }
 
 void SurroundingsSprite::goDark(float dt)
@@ -125,4 +81,32 @@ void SurroundingsSprite::goDark(float dt)
 			}
 		}
 	}
+}
+
+void SurroundingsSprite::initShaders()
+{
+	
+	auto fileUtiles = FileUtils::getInstance();
+	auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/night.fsh");
+	auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
+	auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
+	_glprogramstate = GLProgramState::getOrCreateWithGLProgram(glprogram);
+	_glprogramstate->setUniformFloat("nightDegree", 0.1f* SZTimeSystem::getInstance()->getDayStatus());
+
+	this->setGLProgramState(_glprogramstate);
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	_backgroundListener = EventListenerCustom::create(EVENT_RENDERER_RECREATED,
+		[this](EventCustom*)
+	{
+		glprogram->reset();
+		glprogram->initWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
+		glprogram->link();
+		glprogram->updateUniforms();
+	}
+	);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backgroundListener, -1);
+#endif
+
+	 schedule(schedule_selector( SurroundingsSprite::goDark) ,0.1f,kRepeatForever, 0.0f);
 }

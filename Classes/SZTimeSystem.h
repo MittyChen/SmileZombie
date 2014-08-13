@@ -17,11 +17,9 @@ public:
 	void updateStatus(float delta);
 	CREATE_FUNC(SZTimeSystem);
 
-	~SZTimeSystem(){
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-		Director::getInstance()->getEventDispatcher()->removeEventListener(_backgroundListener);
-#endif
-	};
+	SZTimeSystem();
+	~SZTimeSystem();
+	
 	static SZTimeSystem* getInstance();
 	void startSystem();
 	void setTimeStep(float timest);
@@ -47,7 +45,7 @@ private:
 	int gameStartTime[5];
 	struct tm *startTime;
 	static bool isNeedChangeStatus;
-	cocos2d::GLProgramState *glprogramstate_dark;
+	static cocos2d::GLProgramState *glprogramstate_dark;
 	static float nightDarkRate;
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)

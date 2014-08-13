@@ -3,14 +3,15 @@
 
 #include "cocos2d.h"
 #include "SZTimeSystem.h"
+#include "Element.h"
 
-class Cloud : public cocos2d::Sprite
+class Cloud : public Element
 {
 public:
 	virtual bool init();  
 	CREATE_FUNC(Cloud);
-	const char* getSpiriteName(int index);
-	int randTexture();
+	virtual const char* getSpiriteName(int index);
+	virtual int randTexture();
 	void flowerBreath();
 	void initCloudTexture();
 	void setCloudDirection(int dir);

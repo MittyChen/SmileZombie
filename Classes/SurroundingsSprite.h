@@ -21,6 +21,7 @@ public:
 	int randTexture(int maxVa);
 	void initBaseTexture(	const char* filePrefix,const char* filetype,int max_index);
 	void goDark(float dt);
+	void initShaders();
 private:
 	const char* filePrefix;
 	const char* fileType;

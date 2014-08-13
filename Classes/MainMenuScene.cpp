@@ -3,7 +3,7 @@
 #include "GameScene.h"
 #include "SZTimeSystem.h"
 #include "Consts.h"
-
+#include "UICheckBox.h"
 MainMenuScene * MainMenuScene::instance = NULL;
 
 USING_NS_CC;
@@ -21,6 +21,8 @@ MainMenuScene::MainMenuScene(void)
 }
 MainMenuScene::~MainMenuScene(void)
 {
+	this->unschedule(schedule_selector(MainMenuScene::updateFlowers));
+	this->unscheduleUpdate();
 }
 Scene* MainMenuScene::createScene()
 {
@@ -47,9 +49,11 @@ bool MainMenuScene::init()
     {
         return false;
     }
+	
+	//Data get
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
+	bool audioIsOn = CCUserDefault::sharedUserDefault()->getBoolForKey("AUDIO_ON");
 
 		//UI Block
 	{
@@ -73,29 +77,19 @@ bool MainMenuScene::init()
 		// add the label as a child to this layer
 		this->addChild(label, 1);
 
-
-
-		//audio button
-		CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", true);
-		CCUserDefault::sharedUserDefault()->flush();
-
-		bool audioIsOn = CCUserDefault::sharedUserDefault()->getBoolForKey("AUDIO_ON");
-		const char* textureName = "";
-		if(audioIsOn)
-		{
-			textureName = BACKGROUND_MUSIC_ON;			
-		}
-		else{
-			textureName = BACKGROUND_MUSIC_OFF;
-		}
-
-		Button* audioButton = Button::create(textureName,textureName);
-		audioButton->addTouchEventListener(CC_CALLBACK_2(MainMenuScene::touchEvent, this));
 		
-		audioButton->setPosition(Vec2(origin.x+audioButton->getContentSize().width/2,origin.y+visibleSize.height/2-audioButton->getContentSize().height/2));
 
-		this->addChild(audioButton);
-
+		// Create the checkbox
+		CheckBox* checkBox_audio = CheckBox::create(BACKGROUND_MUSIC_OFF,
+			BACKGROUND_MUSIC_ON,
+			BACKGROUND_MUSIC_ON,
+			BACKGROUND_MUSIC_ON,
+			BACKGROUND_MUSIC_ON);
+		checkBox_audio->setPosition(Vec2(origin.x+checkBox_audio->getContentSize().width/2,origin.y+visibleSize.height/2-checkBox_audio->getContentSize().height/2));
+		checkBox_audio->setSelectedState(audioIsOn);
+		checkBox_audio->setTag(AUDIO_BUTTON);
+		checkBox_audio->addEventListener(CC_CALLBACK_2(MainMenuScene::touchAudioButton, this));
+		this->addChild(checkBox_audio);
 
 		//game statrt button
 		Button* button = Button::create(GAME_START_BUTTON_NORMAL,GAME_START_BUTTON_DOWN);
@@ -109,12 +103,21 @@ bool MainMenuScene::init()
 	//Sound Block
 	{
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.5);  
-		SimpleAudioEngine::getInstance()->playBackgroundMusic(GAME_BACKGROUND_MUSIC,1); 
+		if(audioIsOn)
+		{
+			if(!SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+			{
+					SimpleAudioEngine::getInstance()->playBackgroundMusic(GAME_BACKGROUND_MUSIC_WIN32,1); 
+			}
+		}
 #else
-		SimpleAudioEngine::getInstance()->preloadBackgroundMusic("background_M_Menu.mid");
-		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.5);  
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("background_M_Menu.mid"); 
+		if(audioIsOn)
+		{
+			if(!SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+			{
+				SimpleAudioEngine::getInstance()->playBackgroundMusic(GAME_BACKGROUND_MUSIC,1); 
+			}
+		}
 #endif
 
  
@@ -132,25 +135,11 @@ bool MainMenuScene::init()
 
 	}
 
-	//Time Block
-	{
-		SZTimeSystem::getInstance();
-	}
+
 
 
 	//Elements Block
 	{
-		mclouds = NULL;
-
-		if(!mclouds)
-		{
-			mclouds = CloudSeed::create();
-			//mclouds->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
-			struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
-			mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_RANDOM,TOP_LAYER_ZORDER);
-			//mclouds->setCloudFixedHeight(300);
-			mclouds->startCloudEngine();
-		}
 
 		this->schedule(schedule_selector(MainMenuScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
 //		{
@@ -220,7 +209,6 @@ void MainMenuScene::onTouchMoved(Touch *touch, Event *unused_event)
 void MainMenuScene::onTouchEnded(Touch *touch, Event *unused_event)
 {
 	cleanupParticleSystem(0);
-	//this->scheduleOnce(schedule_selector(MainMenuScene::cleanupParticleSystem) ,2.0f);
 }
 
 void MainMenuScene::onTouchCancelled(Touch *touch, Event *unused_event)
@@ -242,6 +230,7 @@ void MainMenuScene::menuCloseCallback(Ref* pSender)
     exit(0);
 #endif
 }
+
  void MainMenuScene::update(float delta)
  {
 	 flowerAn += 60;
@@ -402,3 +391,38 @@ void MainMenuScene::menuCloseCallback(Ref* pSender)
 		 return NULL; 
 	 } 
  }
+
+  void MainMenuScene::touchAudioButton( Ref *pSender, CheckBox::EventType type )
+  {
+
+	  bool audioIsOn = CCUserDefault::sharedUserDefault()->getBoolForKey("AUDIO_ON");
+	  switch (type)
+	  {
+	  case CheckBox::EventType::SELECTED:
+		  //audio button
+		  CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", true);
+		  if(SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+		  {
+			  CCLOG("isBackgroundMusicPlaying");
+		  }
+			  SimpleAudioEngine::getInstance()->resumeBackgroundMusic(); 
+		  break;
+
+	  case CheckBox::EventType::UNSELECTED:
+		  if(SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+		  {
+			  CCLOG("isBackgroundMusicPlaying");
+		  }
+			CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", false);
+			SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); 
+		  break;
+
+	  default:
+		  //audio button
+		  CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", false);
+		  break;
+	  }
+
+	  CCUserDefault::sharedUserDefault()->flush();
+
+  }

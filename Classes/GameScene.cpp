@@ -16,9 +16,30 @@ GameScene::GameScene(void)
 	flowerAn  =  0;
 	memitter  = NULL;
 	mFlower = NULL;
+	items = NULL;
+	clouds = NULL;
 }
 GameScene::~GameScene(void)
 {
+	if(items)
+	{
+		items->release();
+		items = NULL;
+	}
+	if(clouds)
+	{
+		clouds->release();
+		clouds = NULL;
+	}
+
+	items->stopElementEngine();
+	clouds->stopElementEngine();
+
+	{
+		// start update
+		this->unscheduleUpdate();
+		this->unschedule(schedule_selector(GameScene::updateFlowers));
+	}
 }
 Scene* GameScene::createScene()
 {
@@ -45,8 +66,12 @@ bool GameScene::init()
     {
         return false;
     }
+
+
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 		particleTexture = TextureCache::sharedTextureCache()->addImage("flowers/flower_1.png");
@@ -54,71 +79,30 @@ bool GameScene::init()
 		particleTexture = TextureCache::sharedTextureCache()->addImage("flower_1.png");
 #endif
 
+		{
+			// ´¿É«±³¾°
+			/*auto mTopLayer = LayerColor::create(ccc4(0,50,50,255));
+			mTopLayer->setZOrder(TOP_LAYER_ZORDER);
+			this->addChild(mTopLayer);*/
 
 
-	gameBG = SurroundingsSprite::create();
-
+			//ui
+			//Ëæ»úµØÍ¼±³¾°
+			gameBG = SurroundingsSprite::create();
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 	gameBG->initBaseTexture(GAME_SCENE_BACKGROUND_PICTURE_PREFIX,GAME_SCENE_BACKGROUND_PICTURE_TYPE,GAME_SCENE_BACKGROUND_PICTURE_£ÍAXINDEX);
 #else
 		gameBG->initBaseTexture("dungeon_battle_","jpg",13);
 #endif
 
-
-	/*auto mTopLayer = LayerColor::create(ccc4(0,50,50,255));
-	mTopLayer->setZOrder(TOP_LAYER_ZORDER);
-	this->addChild(mTopLayer);*/
-
 	//gameBG->setTextureByindex(2);//set bg handly
-	gameBG->setTexture("bgtest.png");
+	//gameBG->setTexture("bgtest.png");
+
 	gameBG->setPosition(Vec2(origin.x + visibleSize.width - gameBG->getContentSize().width/2 ,
 		origin.y + gameBG->getContentSize().height/2));
-
 	gameBG->setZOrder(TOP_LAYER_ZORDER);
-
 	this->addChild(gameBG);
 
-	mclouds = NULL;
-
-	auto event =EventListenerTouchOneByOne::create();
-	event->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan,this);
-	event->onTouchCancelled = CC_CALLBACK_2(GameScene::onTouchCancelled,this);
-	event->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded,this);
-	event->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved,this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(event,this);
-
-
-	do
-	{
-		CC_BREAK_IF(! Layer::init());
-		this->scheduleUpdate();
-	} while (0);
-	 
-	if(!mclouds)
-	{
-		mclouds = CloudSeed::create();
-		mclouds->setUseRandomScale(false);
-		//mclouds->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
-		struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
-		mclouds->initCloudEngine(this,mCloudBouds,CLOUD_SEED_TYPE::CLOUDE_FIEXED_SEED_FROM_RIGHT,TOP_LAYER_ZORDER);
-		mclouds->setCloudFixedHeight(100);
-		mclouds->startCloudEngine();
-	}
-	this->schedule(schedule_selector(GameScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
-
-
-	////¹Ç÷À¶¯»­
-	//cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
-	//armature = cocostudio::CCArmature::create("bird");
-	//armature->getAnimation()->playByIndex(0);
-	//armature->setScale(0.6);
-	//armature->getAnimation()->setSpeedScale(0.5);
-	//armature->setPosition(ccp(900,600));
-	//armature->setRotation(-25);
-	//
-	//auto mfly = CCMoveTo::create(5,Vec2(100,600));
-	//armature->runAction(mfly);
-	//addChild(armature);
 
 
 	// Create the button
@@ -149,6 +133,67 @@ bool GameScene::init()
 	this->addChild(details);
 
 
+		}
+	
+		{
+			//touch 
+			auto event =EventListenerTouchOneByOne::create();
+			event->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan,this);
+			event->onTouchCancelled = CC_CALLBACK_2(GameScene::onTouchCancelled,this);
+			event->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded,this);
+			event->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved,this);
+			_eventDispatcher->addEventListenerWithSceneGraphPriority(event,this);
+		}
+			
+			{
+
+				//Elements
+
+				//clouds
+				if(!clouds)
+				{
+					clouds = new ElementFactory();
+					clouds->setUseRandomScale(true);
+					clouds->setElementFixedHeight(300);
+					struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
+					clouds->initElementEngine(this,mCloudBouds,ELEMENT_SEED_TYPE::ELEMENT_FIEXED_SEED_RANDOM,ELEMENT_CONTENT_TYPE::ELEMENT_CLOUDS,TOP_LAYER_ZORDER,1.0f,0.5f,4,3.0f);
+					clouds->startElementEngine();
+				}
+
+				//items
+				if(!items)
+				{
+					items = new ElementFactory();
+					items->setUseRandomScale(false);
+					items->setElementFixedHeight(100);
+					//items->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
+					struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
+					items->initElementEngine(this,mCloudBouds,ELEMENT_SEED_TYPE::ELEMENT_FIEXED_SEED_FROM_RIGHT,ELEMENT_CONTENT_TYPE::ELEMENT_LAND_ITEMS,TOP_LAYER_ZORDER,1.0f,1.5f,1,1.0f);
+					items->startElementEngine();
+				}
+
+
+				
+					////¹Ç÷À¶¯»­
+					//cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
+					//armature = cocostudio::CCArmature::create("bird");
+					//armature->getAnimation()->playByIndex(0);
+					//armature->setScale(0.6);
+					//armature->getAnimation()->setSpeedScale(0.5);
+					//armature->setPosition(ccp(900,600));
+					//armature->setRotation(-25);
+					//
+					//auto mfly = CCMoveTo::create(5,Vec2(100,600));
+					//armature->runAction(mfly);
+					//addChild(armature);
+			}
+
+			{
+				// start update
+				this->scheduleUpdate();
+				this->schedule(schedule_selector(GameScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
+			}
+			
     return true;
 }
 
@@ -188,7 +233,6 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused_event)
 void GameScene::onTouchEnded(Touch *touch, Event *unused_event)
 {
 	cleanupParticleSystem(0);
-	//this->scheduleOnce(schedule_selector(GameScene::cleanupParticleSystem) ,2.0f);
 }
 
 void GameScene::onTouchCancelled(Touch *touch, Event *unused_event)

@@ -10,7 +10,7 @@ DAY_TIME_BLOCK  SZTimeSystem::lastDayBlock = DAY_TIME_BLOCK_NONE;
 DAY_TIME_BLOCK  SZTimeSystem::nextDayBlock = DAY_TIME_BLOCK_NONE; 
 bool SZTimeSystem::isNeedChangeStatus = false;
 float SZTimeSystem::nightDarkRate = 1.0f;
-
+ cocos2d::GLProgramState * SZTimeSystem::glprogramstate_dark = NULL;
 void SZTimeSystem::startSystem()
 {
 	//time_t t = time(0);
@@ -33,8 +33,7 @@ void SZTimeSystem::startSystem()
 	gameStartTime[3] = minite;//·Ö
 	gameStartTime[4] = second;//Ãë
 	
-	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), this, 0.1f, false);
-
+	
 	//CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::goDark), this, 0.1f, false);
 
 	//this->schedule(schedule_selector(SZTimeSystem::updateStatus) ,1.0f,kRepeatForever, 0.0f);
@@ -66,6 +65,8 @@ bool SZTimeSystem::init()
 	isNeedChangeStatus = false;
 
 	initGameTimeShader();
+
+	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), this, 0.1f, false);
 
 	return true;
 }
@@ -125,7 +126,7 @@ struct tm * SZTimeSystem::getGameStartTime()
 
 		 isNeedChangeStatus = true;
 	 }
-	 //goDark(delta);
+	 goDark(delta);
  }
 
  void SZTimeSystem::setNeedChangeStatus( bool val )
@@ -182,7 +183,7 @@ struct tm * SZTimeSystem::getGameStartTime()
 	 auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/night.fsh");
 	 auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
 	 auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
-	 nightDarkRate = 0.1f* getDayStatus();
+	 nightDarkRate = 0.01f* getDayStatus();
 	 glprogramstate_dark = GLProgramState::getOrCreateWithGLProgram(glprogram);
 	 glprogramstate_dark->setUniformFloat("nightDegree", nightDarkRate);
 
@@ -233,4 +234,18 @@ struct tm * SZTimeSystem::getGameStartTime()
  cocos2d::GLProgramState* SZTimeSystem::getDayChangeGLState()
  {
 	 return this->glprogramstate_dark;
+ }
+
+ SZTimeSystem::SZTimeSystem()
+ {
+
+ }
+ SZTimeSystem::~SZTimeSystem()
+ {
+
+	 CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), this);
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	 Director::getInstance()->getEventDispatcher()->removeEventListener(_backgroundListener);
+#endif
  }

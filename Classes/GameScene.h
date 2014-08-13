@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 #include "LonelyFlower.h"
-#include "CloudSeed.h"
+#include "ElementFactory.h"
 #include "cocos-ext.h"
 #include "cocostudio/CCArmature.h"
 #include "ui/UIWidget.h"
@@ -46,9 +46,12 @@ private:
 	cocos2d::CCParticleSystem *memitter;
 	float flowerAn;
 	cocos2d::Texture2D* particleTexture;
-	CloudSeed* mclouds;
-	cocostudio::CCArmature* armature;
+	ElementFactory* clouds;
+	ElementFactory* items;
+	/*cocostudio::CCArmature* armature;*/
 	SurroundingsSprite * gameBG;
+
+
 	static GameScene * instance;
 
 public:

@@ -3,10 +3,11 @@
 
 #include "cocos2d.h"
 #include "LonelyFlower.h"
-#include "CloudSeed.h"
+#include "ElementFactory.h"
 #include "cocos-ext.h"
 #include "cocostudio/CCArmature.h"
 #include "ui/UIWidget.h"
+#include "ui/UICheckBox.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC; 
@@ -45,13 +46,15 @@ public:
 	 void cleanupParticleSystem(float dt);
 	 void goGameScene(float t);
 	 void touchEvent(Ref *pSender, Widget::TouchEventType type);
+	 void touchAudioButton( Ref *pSender, CheckBox::EventType type );
+
 
 private:
 	LonelyFlower * mFlower;
 	cocos2d::CCParticleSystem *memitter;
 	float flowerAn;
 	cocos2d::Texture2D* particleTexture;
-	CloudSeed* mclouds;
+	ElementFactory* mclouds;
 	cocostudio::CCArmature* armature;
 	static MainMenuScene * instance;
 
@@ -62,6 +65,12 @@ public:
 		PARTICLE_ZORDER = -10,
 		TOP_LAYER_ZORDER = -20
 	};
+
+	enum UI_WIDGET_TAG
+	{
+		AUDIO_BUTTON 
+	};
+
 
 };
 
