@@ -4,6 +4,9 @@
 #include "SZTimeSystem.h"
 #include "Consts.h"
 #include "UICheckBox.h"
+#include "CommonUtils.h"
+
+
 MainMenuScene * MainMenuScene::instance = NULL;
 
 USING_NS_CC;
@@ -53,11 +56,17 @@ bool MainMenuScene::init()
 	//Data get
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	bool audioIsOn = CCUserDefault::sharedUserDefault()->getBoolForKey("AUDIO_ON");
+	bool audioIsOn = UserDefault::getInstance()->getBoolForKey("AUDIO_ON");
+	bool audioEffectIsOn = UserDefault::getInstance()->getBoolForKey("AUDIO_EFFECT_ON");
 
 		//UI Block
 	{
 		
+		auto titlesprite = Sprite::create(GAME_TITTLE_PICTURE);
+		titlesprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height*4/7 + origin.y));
+		titlesprite->setScale(0.8);
+		this->addChild(titlesprite, 0);
+
 		/*auto mTopLayer = LayerColor::create(ccc4(0,50,50,255));
 		mTopLayer->setZOrder(TOP_LAYER_ZORDER);
 		this->addChild(mTopLayer);*/
@@ -67,29 +76,36 @@ bool MainMenuScene::init()
 			origin.y + bgSpirit->getContentSize().height/2));
 		bgSpirit->setZOrder(TOP_LAYER_ZORDER);
 		this->addChild(bgSpirit);
-
-
-		auto label = LabelTTF::create("MainMenu Scene", "Arial", 24);
-		// position the label on the center of the screen
-		label->setPosition(Vec2(origin.x + visibleSize.width/2,
-			origin.y + visibleSize.height - label->getContentSize().height));
-
-		// add the label as a child to this layer
-		this->addChild(label, 1);
-
 		
-
-		// Create the checkbox
-		CheckBox* checkBox_audio = CheckBox::create(BACKGROUND_MUSIC_OFF,
-			BACKGROUND_MUSIC_ON,
-			BACKGROUND_MUSIC_ON,
-			BACKGROUND_MUSIC_ON,
-			BACKGROUND_MUSIC_ON);
+		std::string   bgOnPic = FileUtils::sharedFileUtils()->fullPathForFilename(BACKGROUND_MUSIC_BUTTON_ON);
+		std::string   bgOffPic = FileUtils::sharedFileUtils()->fullPathForFilename(BACKGROUND_MUSIC_BUTTON_OFF);
+		std::string   efOnPic = FileUtils::sharedFileUtils()->fullPathForFilename(GAME_EFFECT_BUTTON_ON);
+		std::string   efOffPic =FileUtils::sharedFileUtils()->fullPathForFilename(GAME_EFFECT_BUTTON_OFF);
+		
+			CheckBox* checkBox_audio = CheckBox::create(bgOffPic,
+			bgOnPic,
+			bgOnPic,
+			bgOnPic,
+			bgOnPic);
 		checkBox_audio->setPosition(Vec2(origin.x+checkBox_audio->getContentSize().width/2,origin.y+visibleSize.height/2-checkBox_audio->getContentSize().height/2));
 		checkBox_audio->setSelectedState(audioIsOn);
-		checkBox_audio->setTag(AUDIO_BUTTON);
+		checkBox_audio->setTag(AUDIO_BG_BUTTON);
 		checkBox_audio->addEventListener(CC_CALLBACK_2(MainMenuScene::touchAudioButton, this));
 		this->addChild(checkBox_audio);
+
+		CheckBox* checkBox_audio_effect = CheckBox::create(efOffPic,
+			efOnPic,
+			efOnPic,
+			efOnPic,
+			efOnPic);
+		checkBox_audio_effect->setPosition(Vec2(origin.x+checkBox_audio_effect->getContentSize().width/2,origin.y+visibleSize.height/2+checkBox_audio_effect->getContentSize().height/2));
+		checkBox_audio_effect->setSelectedState(audioEffectIsOn);
+		checkBox_audio_effect->setTag(AUDIO_EFFECT_BUTTON);
+		checkBox_audio_effect->addEventListener(CC_CALLBACK_2(MainMenuScene::touchAudioButton, this));
+		this->addChild(checkBox_audio_effect);
+
+
+
 
 		//game statrt button
 		Button* button = Button::create(GAME_START_BUTTON_NORMAL,GAME_START_BUTTON_DOWN);
@@ -99,28 +115,13 @@ bool MainMenuScene::init()
 		button->setScale(0.5);
 		this->addChild(button);
 	}
-
+	 
 	//Sound Block
 	{
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 		if(audioIsOn)
 		{
-			if(!SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
-			{
-					SimpleAudioEngine::getInstance()->playBackgroundMusic(GAME_BACKGROUND_MUSIC_WIN32,1); 
-			}
-		}
-#else
-		if(audioIsOn)
-		{
-			if(!SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
-			{
-				SimpleAudioEngine::getInstance()->playBackgroundMusic(GAME_BACKGROUND_MUSIC,1); 
-			}
-		}
-#endif
-
- 
+			CommonUtils::playBackgrondMusic();
+		} 
 	}
 
 
@@ -142,25 +143,6 @@ bool MainMenuScene::init()
 	{
 
 		this->schedule(schedule_selector(MainMenuScene::updateFlowers) ,2.0f,kRepeatForever, 0.0f);
-//		{
-//			////¹Ç÷À¶¯»­
-//#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-//			cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
-//
-//#else
-//			cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("bird0.png","bird0.plist","bird.ExportJson");
-//#endif
-//			armature = cocostudio::CCArmature::create("bird");
-//			armature->getAnimation()->playByIndex(0);
-//			armature->setScale(0.6);
-//			armature->getAnimation()->setSpeedScale(0.5);
-//			armature->setPosition(ccp(900,600));
-//			armature->setRotation(-25);
-//
-//			auto mfly = CCMoveTo::create(5,Vec2(100,600));
-//			armature->runAction(mfly);
-//			addChild(armature);
-//		}
 
 	}
 
@@ -247,33 +229,8 @@ void MainMenuScene::menuCloseCallback(Ref* pSender)
 
  void MainMenuScene::setParticlesystem(Vec2 mlocation,float amAngle)
  {
-
-	    //CCParticleExplosion±¬Õ¨
-		// CCParticleFire »ð
-		// CCParticleFireworksÑÌ»ð
-		// CCParticleFlower»¨
-		// CCParticleGalaxy ÒøºÓ
-		// CCParticleMeteor Á÷ÐÇ
-		// CCParticleRain ÏÂÓê
-		// CCParticleSmoke ÏÂÑ©
-		// CCParticleSnow ´¶ÑÌ
-		// CCParticleSpiral ÂÝÐý
-		// CCParticleSun Ì«ÑôÑæ
 	 if(!memitter)
 	 {
-	 	/* memitter = CCParticleFireworks::create();  
-		 memitter->setDuration( kCCParticleDurationInfinity);  
-		 memitter->setTotalParticles(50);
-		 memitter->retain();  
-		 this->addChild(memitter, -10);  
-		 memitter->setTexture( particleTexture );  
-		 memitter->setPosition(mlocation);  
-		 memitter->setStartSize(10);
-		 memitter->setStartSizeVar(1);
-		 memitter->setRadialAccel(20);  
-		 memitter->setRadialAccelVar(1);
-		 memitter->setAngle(amAngle);
-		 memitter->setVisible(true);*/
 		 memitter= ParticleSystemQuad::create();
 		 memitter->retain(); 
 		 this->addChild(memitter,1);  
@@ -345,6 +302,7 @@ void MainMenuScene::menuCloseCallback(Ref* pSender)
 	 switch (type)
 	 {
 	 case Widget::TouchEventType::BEGAN:
+		 CommonUtils::playButtonTouchMusic();
 		 break;
 
 	 case Widget::TouchEventType::MOVED:
@@ -395,33 +353,65 @@ void MainMenuScene::menuCloseCallback(Ref* pSender)
   void MainMenuScene::touchAudioButton( Ref *pSender, CheckBox::EventType type )
   {
 
+	  int tag = ((CheckBox*)pSender)->getTag();
+
 	  bool audioIsOn = CCUserDefault::sharedUserDefault()->getBoolForKey("AUDIO_ON");
-	  switch (type)
+
+	   CommonUtils::playButtonTouchMusic();
+
+	  if(tag == AUDIO_BG_BUTTON)
 	  {
-	  case CheckBox::EventType::SELECTED:
-		  //audio button
-		  CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", true);
-		  if(SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+		  switch (type)
 		  {
-			  CCLOG("isBackgroundMusicPlaying");
-		  }
-			  SimpleAudioEngine::getInstance()->resumeBackgroundMusic(); 
-		  break;
+		  case CheckBox::EventType::SELECTED:
+			  //DATA
+			  CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", true);
+			  //Play
+			  //mid format will not loop after pause and resume
+			  if(!SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+			  {
+					CommonUtils::playBackgrondMusic();
+			  }else{
+				  SimpleAudioEngine::getInstance()->resumeBackgroundMusic(); 
+			  }
+			  break;
 
-	  case CheckBox::EventType::UNSELECTED:
-		  if(SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+		  case CheckBox::EventType::UNSELECTED:
+			  CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", false);
+
+			  if(!SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+			  {
+				CommonUtils::playBackgrondMusic();
+			  }else{
+				  SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); 
+			  }
+
+			  break;
+
+		  default: 
+			  break;
+		  }
+	  }else if(tag == AUDIO_EFFECT_BUTTON)
+	  {
+		  switch (type)
 		  {
-			  CCLOG("isBackgroundMusicPlaying");
-		  }
-			CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", false);
-			SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); 
-		  break;
+		  case CheckBox::EventType::SELECTED:
+			  //DATA
+			  CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_EFFECT_ON", true);
+			  CommonUtils::setEffectMusicShouldPlay(true);
+			   SimpleAudioEngine::getInstance()->resumeAllEffects();
+			  break;
 
-	  default:
-		  //audio button
-		  CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_ON", false);
-		  break;
+		  case CheckBox::EventType::UNSELECTED:
+			  CCUserDefault::sharedUserDefault()->setBoolForKey("AUDIO_EFFECT_ON", false);
+			  CommonUtils::setEffectMusicShouldPlay(false);
+			   SimpleAudioEngine::getInstance()->pauseAllEffects();
+			  break;
+		  default: 
+			  break;
+		  }
 	  }
+	
 
 	  CCUserDefault::sharedUserDefault()->flush();
 

@@ -4,8 +4,8 @@
 
 enum DAY_TIME_BLOCK
 {
-	DAY_NIGHT_BLOCK= 1,//ºÚÒ¹
-	DAY_DUSK_BLOCK = 7,//»Æ»è
+	DAY_NIGHT_BLOCK= 4,//ºÚÒ¹
+	DAY_DUSK_BLOCK = 6,//»Æ»è
 	DAY_MORNING_BLOCK = 8,//Çå³¿
 	DAY_DAY_TIME_BLOCK = 10,//°×Ìì
 	DAY_TIME_BLOCK_NONE = 0//ÎÞ×´Ì¬
@@ -32,6 +32,8 @@ public:
 	void initGameTimeShader();
 	void goDark(float dt);
 	cocos2d::GLProgramState* getDayChangeGLState();
+
+
 	static DAY_TIME_BLOCK currentDayBlock; 
 	static DAY_TIME_BLOCK lastDayBlock; 
 	static DAY_TIME_BLOCK nextDayBlock;

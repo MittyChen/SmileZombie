@@ -1,13 +1,14 @@
 #include "AppDelegate.h"
 #include "SplashScene.h"
 USING_NS_CC;
-
+using namespace CocosDenshion;
 AppDelegate::AppDelegate() {
 
 }
 
 AppDelegate::~AppDelegate() 
 {
+	SimpleAudioEngine::sharedEngine()->end();
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {

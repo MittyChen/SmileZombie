@@ -44,8 +44,11 @@ void  SurroundingsSprite::initBaseTexture(	const char* filePrefix,const char* fi
 	this->max_index =max_index;
 	this->filePrefix = filePrefix;
 	this->fileType=filetype;
+
 	//Ëæ»úÉú³É
 	this->setTexture(getSpiriteName(randTexture(max_index)));
+
+	 schedule(schedule_selector( SurroundingsSprite::goDark) ,0.1f,kRepeatForever, 0.0f);
 }
 
 void SurroundingsSprite::setTextureByindex(int index)
@@ -86,12 +89,15 @@ void SurroundingsSprite::goDark(float dt)
 void SurroundingsSprite::initShaders()
 {
 	
+	
 	auto fileUtiles = FileUtils::getInstance();
 	auto fragmentFullPath = fileUtiles->fullPathForFilename("SZShaders/night.fsh");
 	auto fragSource = fileUtiles->getStringFromFile(fragmentFullPath);
 	auto glprogram = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
 	_glprogramstate = GLProgramState::getOrCreateWithGLProgram(glprogram);
-	_glprogramstate->setUniformFloat("nightDegree", 0.1f* SZTimeSystem::getInstance()->getDayStatus());
+
+	nightDarkRate =  0.1f* SZTimeSystem::getInstance()->getDayStatus();
+	_glprogramstate->setUniformFloat("nightDegree",nightDarkRate);
 
 	this->setGLProgramState(_glprogramstate);
 
@@ -108,5 +114,5 @@ void SurroundingsSprite::initShaders()
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backgroundListener, -1);
 #endif
 
-	 schedule(schedule_selector( SurroundingsSprite::goDark) ,0.1f,kRepeatForever, 0.0f);
+	
 }

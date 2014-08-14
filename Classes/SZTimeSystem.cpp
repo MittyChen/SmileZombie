@@ -33,10 +33,7 @@ void SZTimeSystem::startSystem()
 	gameStartTime[3] = minite;//·Ö
 	gameStartTime[4] = second;//Ãë
 	
-	
-	//CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::goDark), this, 0.1f, false);
-
-	//this->schedule(schedule_selector(SZTimeSystem::updateStatus) ,1.0f,kRepeatForever, 0.0f);
+	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), instance, 0.1f, false);
 }
 
 void SZTimeSystem::setTimeStep(float timest)
@@ -65,9 +62,8 @@ bool SZTimeSystem::init()
 	isNeedChangeStatus = false;
 
 	initGameTimeShader();
-
-	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), this, 0.1f, false);
-
+ 
+	
 	return true;
 }
 
@@ -81,14 +77,14 @@ DAY_TIME_BLOCK SZTimeSystem::getDayStatus()
 	int h = newtime->tm_sec;
 	int m = newtime->tm_min;
 
-	if(h>0&&h<10)
+	if(h>=0&&h<10)
 	{
 		res = DAY_TIME_BLOCK::DAY_MORNING_BLOCK;
-	}else if(h>10&&h<30)
+	}else if(h>=10&&h<30)
 	{
 		res = DAY_TIME_BLOCK::DAY_DAY_TIME_BLOCK;
 	}
-	else if(h>30&&h<35)
+	else if(h>=30&&h<=35)
 	{
 		res = DAY_TIME_BLOCK::DAY_DUSK_BLOCK;
 	}
@@ -242,8 +238,6 @@ struct tm * SZTimeSystem::getGameStartTime()
  }
  SZTimeSystem::~SZTimeSystem()
  {
-
-	 CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(SEL_SCHEDULE(&SZTimeSystem::updateStatus), this);
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 	 Director::getInstance()->getEventDispatcher()->removeEventListener(_backgroundListener);

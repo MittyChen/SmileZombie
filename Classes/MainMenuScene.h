@@ -68,7 +68,8 @@ public:
 
 	enum UI_WIDGET_TAG
 	{
-		AUDIO_BUTTON 
+		AUDIO_BG_BUTTON,
+		AUDIO_EFFECT_BUTTON
 	};
 
 

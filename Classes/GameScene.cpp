@@ -1,7 +1,7 @@
 #include "GameScene.h"
 #include "SurroundingsSprite.h"
 #include "UIButton.h"
-
+#include "CommonUtils.h"
 #include "MainMenuScene.h"
 #include "Consts.h"
 USING_NS_CC;
@@ -88,7 +88,7 @@ bool GameScene::init()
 
 			//ui
 			//Ëæ»úµØÍ¼±³¾°
-			gameBG = SurroundingsSprite::create();
+			SurroundingsSprite *	gameBG = SurroundingsSprite::create();
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 	gameBG->initBaseTexture(GAME_SCENE_BACKGROUND_PICTURE_PREFIX,GAME_SCENE_BACKGROUND_PICTURE_TYPE,GAME_SCENE_BACKGROUND_PICTURE_£ÍAXINDEX);
 #else
@@ -109,6 +109,7 @@ bool GameScene::init()
 	Button* button = Button::create(HOME_PICTURE_NORMAL,HOME_PICTURE_DOWN);
 	button->setPosition(Vec2(origin.x+button->getContentSize().width/2,origin.y+visibleSize.height-button->getContentSize().height/2));
 	button->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
+	
 	this->addChild(button);
 
 	auto label = LabelTTF::create("Game Scene", "Arial", 24);
@@ -378,6 +379,7 @@ void GameScene::menuCloseCallback(Ref* pSender)
 	 switch (type)
 	 {
 	 case Widget::TouchEventType::BEGAN:
+		  CommonUtils::playButtonTouchMusic();
 		 break;
 
 	 case Widget::TouchEventType::MOVED:

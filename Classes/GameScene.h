@@ -49,7 +49,7 @@ private:
 	ElementFactory* clouds;
 	ElementFactory* items;
 	/*cocostudio::CCArmature* armature;*/
-	SurroundingsSprite * gameBG;
+
 
 
 	static GameScene * instance;
