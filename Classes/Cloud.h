@@ -12,11 +12,7 @@ public:
 	CREATE_FUNC(Cloud);
 	virtual const char* getSpiriteName(int index);
 	virtual int randTexture();
-	void flowerBreath();
-	void initCloudTexture();
-	void setCloudDirection(int dir);
-	int getCloudDirection();
-	int cloudDirection;
+	void initCloudTexture(); 
 	//shaders
 protected:
 	Cloud()

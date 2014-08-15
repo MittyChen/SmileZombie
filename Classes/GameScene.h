@@ -48,7 +48,8 @@ private:
 	cocos2d::Texture2D* particleTexture;
 	ElementFactory* clouds;
 	ElementFactory* items;
-	/*cocostudio::CCArmature* armature;*/
+	ElementFactory* land;
+	cocostudio::CCArmature* armature;
 
 
 

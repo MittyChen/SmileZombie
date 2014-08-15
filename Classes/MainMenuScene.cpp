@@ -87,9 +87,10 @@ bool MainMenuScene::init()
 			bgOnPic,
 			bgOnPic,
 			bgOnPic);
-		checkBox_audio->setPosition(Vec2(origin.x+checkBox_audio->getContentSize().width/2,origin.y+visibleSize.height/2-checkBox_audio->getContentSize().height/2));
+		checkBox_audio->setPosition(Vec2(origin.x+checkBox_audio->getContentSize().width/2,origin.y+visibleSize.height*3/7-checkBox_audio->getContentSize().height/2));
 		checkBox_audio->setSelectedState(audioIsOn);
 		checkBox_audio->setTag(AUDIO_BG_BUTTON);
+		checkBox_audio->setScale(0.7);
 		checkBox_audio->addEventListener(CC_CALLBACK_2(MainMenuScene::touchAudioButton, this));
 		this->addChild(checkBox_audio);
 
@@ -98,9 +99,10 @@ bool MainMenuScene::init()
 			efOnPic,
 			efOnPic,
 			efOnPic);
-		checkBox_audio_effect->setPosition(Vec2(origin.x+checkBox_audio_effect->getContentSize().width/2,origin.y+visibleSize.height/2+checkBox_audio_effect->getContentSize().height/2));
+		checkBox_audio_effect->setPosition(Vec2(checkBox_audio->getPosition().x,checkBox_audio->getPosition().y-checkBox_audio->getContentSize().height));
 		checkBox_audio_effect->setSelectedState(audioEffectIsOn);
 		checkBox_audio_effect->setTag(AUDIO_EFFECT_BUTTON);
+		checkBox_audio_effect->setScale(0.7);
 		checkBox_audio_effect->addEventListener(CC_CALLBACK_2(MainMenuScene::touchAudioButton, this));
 		this->addChild(checkBox_audio_effect);
 

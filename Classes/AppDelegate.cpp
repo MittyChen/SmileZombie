@@ -16,7 +16,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-        glview = GLView::createWithRect("Hello",Rect(0,0,800,480),1);
+        glview = GLView::createWithRect("Smile Zombie",Rect(0,0,800,480),1);
         director->setOpenGLView(glview);
 		glview->setDesignResolutionSize(640,440,ResolutionPolicy::SHOW_ALL);
 		/*director->setContentScaleFactor(640/320);*/

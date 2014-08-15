@@ -15,7 +15,6 @@ bool Cloud::init()
 }
 const char* Cloud::getSpiriteName(int index)
 {
-	CCLOG("Cloud::getSpiriteName  %d",index);
 	if(index>=0 && index<=CLOUD_PICTURE_MAX_INDEX)
 	{
 		CCString* resToRet = CCString::createWithFormat( "%s%d.%s",CLOUD_PICTURE_PREFIX,index,CLOUD_PICTURE_TYPE);
@@ -59,32 +58,4 @@ void  Cloud::initCloudTexture()
 		);
 		Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backgroundListener, -1);
 #endif*/
-}
-
-void Cloud::flowerBreath()
-{
-	CCAction*  action = Sequence::createWithTwoActions(	ScaleTo::create(1, 0.6f), ScaleTo::create(1, 1.0f));
-	this->runAction(action); 
-}
-
-void Cloud::setCloudDirection(int dir)
-{
-	if(dir>1)
-	{
-		dir =1;
-	}
-	if(dir<-1)
-	{
-		dir =-1;
-	}
-	if(dir==0)
-	{
-		CCLOG("this cloud will not move");
-	}
-	cloudDirection = dir;
-}
-
-int Cloud::getCloudDirection()
-{
-	return cloudDirection;
 }

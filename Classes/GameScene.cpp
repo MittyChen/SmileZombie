@@ -18,6 +18,7 @@ GameScene::GameScene(void)
 	mFlower = NULL;
 	items = NULL;
 	clouds = NULL;
+	land = NULL;
 }
 GameScene::~GameScene(void)
 {
@@ -31,9 +32,15 @@ GameScene::~GameScene(void)
 		clouds->release();
 		clouds = NULL;
 	}
+	if(land)
+	{
+		land->release();
+		land = NULL;
+	}
 
 	items->stopElementEngine();
 	clouds->stopElementEngine();
+	land->stopElementEngine();
 
 	{
 		// start update
@@ -106,10 +113,10 @@ bool GameScene::init()
 
 
 	// Create the button
-	Button* button = Button::create(HOME_PICTURE_NORMAL,HOME_PICTURE_DOWN);
+	Button* button = Button::create(BACK_PICTURE_NORMAL,BACK_PICTURE_DOWN);
 	button->setPosition(Vec2(origin.x+button->getContentSize().width/2,origin.y+visibleSize.height-button->getContentSize().height/2));
 	button->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
-	
+	button->setScale(0.7);
 	this->addChild(button);
 
 	auto label = LabelTTF::create("Game Scene", "Arial", 24);
@@ -150,6 +157,31 @@ bool GameScene::init()
 
 				//Elements
 
+				
+
+				////land
+				if(!land)
+				{
+					Sprite* temp = Sprite::create(LAND_PICTURE_DEFAULT);
+					
+					land = new ElementFactory();
+					land->setUseRandomScale(false);
+					land->setElementFixedHeight(60); 
+					float scaleR = 1.0f;
+					int landsum =5 * visibleSize.width/(temp->getContentSize().width);
+					 
+					float landStep = 1.0f;
+					float breaktime = 1.0f ;
+					 
+					struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
+					land->initElementEngine(this,mCloudBouds,ELEMENT_SEED_TYPE::ELEMENT_FIEXED_SEED_FROM_RIGHT_CONTINUE,ELEMENT_CONTENT_TYPE::ELEMENT_LAND,TOP_LAYER_ZORDER,scaleR,landStep,landsum,breaktime);
+					land->startElementEngine();
+				}
+				cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("mz/mz0.png","mz/mz0.plist","mz/mz.ExportJson");
+				armature = cocostudio::CCArmature::create("mz");
+				armature->getAnimation()->playByIndex(0);
+				armature->setPosition(Vec2(origin.x + visibleSize.width/6,origin.y +90.0f));
+
 				//clouds
 				if(!clouds)
 				{
@@ -166,15 +198,14 @@ bool GameScene::init()
 				{
 					items = new ElementFactory();
 					items->setUseRandomScale(false);
-					items->setElementFixedHeight(100);
+					items->setElementFixedHeight(140);
 					//items->setBounds(visibleSize.height*0.95,visibleSize.height*0.7,-90.0f,visibleSize.width);
 					struct BounsStruct mCloudBouds ={origin.y + visibleSize.height*0.8,origin.y+visibleSize.height*0.7,origin.x -90.0f,origin.x + visibleSize.width};
-					items->initElementEngine(this,mCloudBouds,ELEMENT_SEED_TYPE::ELEMENT_FIEXED_SEED_FROM_RIGHT,ELEMENT_CONTENT_TYPE::ELEMENT_LAND_ITEMS,TOP_LAYER_ZORDER,1.0f,1.5f,1,1.0f);
+					items->initElementEngine(this,mCloudBouds,ELEMENT_SEED_TYPE::ELEMENT_FIEXED_SEED_FROM_RIGHT,ELEMENT_CONTENT_TYPE::ELEMENT_LAND_ITEMS,TOP_LAYER_ZORDER,1.0f,1.0f,3,2.0f);
 					items->startElementEngine();
 				}
+				addChild(armature);
 
-
-				
 					////¹Ç÷À¶¯»­
 					//cocostudio::CCArmatureDataManager::sharedArmatureDataManager()->addArmatureFileInfo("birdres/bird0.png","birdres/bird0.plist","birdres/bird.ExportJson");
 					//armature = cocostudio::CCArmature::create("bird");
