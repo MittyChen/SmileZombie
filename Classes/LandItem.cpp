@@ -15,7 +15,6 @@ bool LandItem::init()
 }
 const char* LandItem::getSpiriteName(int index)
 {
-	CCLOG("LandItem::getSpiriteName  %d",index);
 	if(index>=0 && index<=LAND_ITEMS_PICTURE_MAX_INDEX)
 	{
 		CCString* resToRet = CCString::createWithFormat( "%s%d.%s",LAND_ITEMS_PICTURE_PREFIX,index,LAND_ITEMS_PICTURE_TYPE);

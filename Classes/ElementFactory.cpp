@@ -22,6 +22,7 @@ using namespace  cocos2d;
 	 mlayer = NULL;
 	 mytype = ELEMENT_FIEXED_SEED_FROM_RIGHT;
 
+
 	 return true;
  }
 
@@ -46,8 +47,6 @@ float ElementFactory::getOriginalPositionY()
 	}
 	 srand((unsigned) time(NULL));
 	float heightToreturn = Random(ElementBounds.downBounds,(int)ElementBounds.downBounds+(int)ElementBounds.upBounds);
-	//ElementBounds.downBounds+rand()%((int)ElementBounds.downBounds+(int)ElementBounds.upBounds);
-	CCLOG(" ElementFactory::getRandomHeight()  result = %f",heightToreturn);
 	return heightToreturn;
 }
 
@@ -97,11 +96,6 @@ void ElementFactory::startElementEngine()
 	initSingleElement(mSpi);
 	mSpriteList.pushBack(mSpi);
 	mlayer->addChild(mSpi,mZorder);
-
-
-	CCLOG("  ElementFactory::seedElements = new Element");
-	//mlayer->schedule(schedule_selector(ElementFactory::seedElements) ,Element_SEED_BREAKTIME,kRepeatForever, 0.0f);
-	//mlayer->schedule(schedule_selector(ElementFactory::updatePositionHorizen) ,1/60,kRepeatForever, 0.0f);//Element move
 	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&ElementFactory::updatePositionHorizen), this, 1/60, false);
 	CCDirector::sharedDirector()->getScheduler()->scheduleSelector(SEL_SCHEDULE(&ElementFactory::seedElements), this, Element_SEED_BREAKTIME, false);
 	
@@ -122,14 +116,13 @@ void ElementFactory::initElementEngine(Layer *layer,struct BounsStruct mstrct,EL
 }
 void ElementFactory::seedElements(float dt)
 {
-	if(ELEMENT_FIEXED_SEED_FROM_RIGHT_CONTINUE == mytype)
-	{
-		for(int i = 0 ; i < mSpriteList.size() ; i++)
-		{
-			auto mSpir = (Element*)mSpriteList.at(i);
-			CCLOG("   ElementFactory::seedElements index = %d /  pos = %f",i,mSpir->getPosition().x);
-		}
-	}
+	//if(ELEMENT_FIEXED_SEED_FROM_RIGHT_CONTINUE == mytype)
+	//{
+	//	for(int i = 0 ; i < mSpriteList.size() ; i++)
+	//	{
+	//		auto mSpir = (Element*)mSpriteList.at(i);
+	//	}
+	//}
 
 	if( mSpriteList.size() < Element_SUM)
 	{
@@ -137,7 +130,6 @@ void ElementFactory::seedElements(float dt)
 		initSingleElement(mSpi);
 		mSpriteList.pushBack(mSpi);
 		mlayer->addChild(mSpi,mZorder);
-		CCLOG("  ElementFactory::seedElements = new Element");
 	}else
 	{
 		for(int i = 0 ; i < mSpriteList.size() ; i++)
@@ -151,7 +143,6 @@ void ElementFactory::seedElements(float dt)
 				 initSingleElement(mSpi);
 				 mSpriteList.replace(i,mSpi);
 				 mlayer->addChild(mSpi,mZorder);
-				 CCLOG("  ElementFactory::seedElements = replace Element");
 			 }
 		}
 	}
@@ -209,7 +200,6 @@ bool ElementFactory::checkWidthBounds( Element* mSpir )
 		{
 			thisElementBeyondBonds = true;
 		}
-		CCLOG("this is a random Element seed mode");
 		break;
 
 	default:
@@ -221,6 +211,7 @@ bool ElementFactory::checkWidthBounds( Element* mSpir )
 
 void ElementFactory::initSingleElement( Element* mSpi )
 {
+	float targetX  = 0;
 	//set position and  direction
 	switch (mytype)
 	{
@@ -234,19 +225,23 @@ void ElementFactory::initSingleElement( Element* mSpi )
 			mSpi->setPosition(Vec2((ElementBounds.rightBounds)*(0.2f),getOriginalPositionY()));
 		}
 
-		mSpi->setElementDirection(1);
+		mSpi->setElementDirection(1); 
 		break;
 	case ELEMENT_SEED_TYPE::ELEMENT_FIEXED_SEED_FROM_RIGHT:
-		if(mSpriteList.size()>0)
 		{
-			mSpi->setPosition(Vec2((ElementBounds.rightBounds)*1.2f,getOriginalPositionY()));
-		}else
-		{
-			mSpi->setPosition(Vec2((ElementBounds.rightBounds)*0.7f,getOriginalPositionY()));
+				if(mSpriteList.size()>0)
+				{
+					mSpi->setPosition(Vec2((ElementBounds.rightBounds)*1.2f,getOriginalPositionY()));
+				}else
+				{
+					mSpi->setPosition(Vec2((ElementBounds.rightBounds)*0.7f,getOriginalPositionY()));
+				}
+
+				mSpi->setElementDirection(-1); 
+				
+				break;
 		}
 	
-		mSpi->setElementDirection(-1);
-		break;
 
 	case ELEMENT_SEED_TYPE::ELEMENT_FIEXED_SEED_FROM_RIGHT_CONTINUE:
 		{
@@ -257,7 +252,7 @@ void ElementFactory::initSingleElement( Element* mSpi )
 				mSpi->setPosition(Vec2((ElementBounds.rightBounds)*0.8f,getOriginalPositionY()));
 			} 
 			mSpi->setRotation3D(Vec3(-45,0,0));//ÄæÊ±Õë·­×ª
-			mSpi->setElementDirection(-1);
+			mSpi->setElementDirection(-1); 
 		break;
 		}
 
@@ -279,7 +274,7 @@ void ElementFactory::initSingleElement( Element* mSpi )
 			{
 					mSpi->setPosition(Vec2((ElementBounds.rightBounds)*(0.2f),getOriginalPositionY()));
 			}  
-			mSpi->setElementDirection(1);
+			mSpi->setElementDirection(1); 
 		}else{
 
 			if(mSpriteList.size()>0)
@@ -288,19 +283,22 @@ void ElementFactory::initSingleElement( Element* mSpi )
 			}else
 			{
 				mSpi->setPosition(Vec2((ElementBounds.rightBounds)*0.8f,getOriginalPositionY()));
-			} 
-
-			
+			}  
 			mSpi->setElementDirection(-1);
 		}
-		CCLOG("this is a random Element seed mode");
 		break;
 		}
 	default:
 		break;
 	}
-
-			mSpi->setScale(getElementScaleRamdomRate()*Element_SIZE_SCALE);
+	if(mSpi->getElementDirection() > 0)
+	{
+		targetX = (ElementBounds.leftBounds+ElementBounds.leftBounds*0.2);
+	}else{
+		targetX = (ElementBounds.leftBounds-ElementBounds.leftBounds*0.2);
+	}
+	mSpi->setScale(getElementScaleRamdomRate()*Element_SIZE_SCALE);
+	mSpi->runAction(MoveTo::create(targetX/Element_MOVE_STEP,Vec2(targetX,mSpi->getPosition().y)));
 }
 
 void ElementFactory::clearElement( float dt )
@@ -310,8 +308,6 @@ void ElementFactory::clearElement( float dt )
 		auto mSpir = (Element*)mSpriteList.at(i);//×´Ì¬¸Ä±äÔÆ¶ä½¥Òþ 
 		mSpir->runAction(CCFadeOut::create(2));
 	}
-
-	CCLOG("the day  statu is changed");
 }
 
 void ElementFactory::setUseRandomScale(bool val)
@@ -350,33 +346,25 @@ Element * ElementFactory::getElementObj()
 
 void ElementFactory::stopElementEngine()
 {
-	CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(SEL_SCHEDULE(&ElementFactory::updatePositionHorizen),this);
 	CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(SEL_SCHEDULE(&ElementFactory::seedElements),this);
+	CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(SEL_SCHEDULE(&ElementFactory::updatePositionHorizen),this);
 }
 
 Element *  ElementFactory::getMaxPositionInElements()
 {
-	int i,j;
-	Element * mtemp  = NULL;
-	int n = mSpriteList.size();
-	for(i=0;i<n-1;i++){
-		float temp1sp = mSpriteList.at(i)->getPosition().x;
-		for(j=n-1; j>i; j--){
-			float temp2sp = mSpriteList.at(j)->getPosition().x;
-			if(temp1sp>temp2sp)
-			{
-				mtemp = mSpriteList.at(j);
-				mSpriteList.replace(j,mSpriteList.at(i));
-				mSpriteList.replace(i,mtemp);
-			}
-		}
-	}
-	if(mtemp)
+	int indexM = 0;
+	float maxVal = 0.0f;
+	for(int i = 0 ; i < mSpriteList.size() ; i++)
 	{
-		mtemp->release();
-		mtemp =NULL;
+		auto mSpir = (Element*)mSpriteList.at(i);
+		 float posiX = mSpir->getPosition().x+mSpir->getContentSize().width;
+		 if(posiX > maxVal )
+		 {
+			  maxVal = posiX;
+			  indexM = i;
+		 }
 	}
+	
 
-
-	return  mSpriteList.at(mSpriteList.size()-1);
+	return  mSpriteList.at(indexM);
 }
